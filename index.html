@@ -38,6 +38,68 @@ body{background:#f1f5f9;color:#0f172a;overflow:hidden}
 .btn-launch:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.3)}
 .setup-hidden{display:none!important}
 
+/* 提示框 */
+.note-box{background:#f1f5f9;border-left:3px solid #94a3b8;border-radius:6px;padding:10px 14px;font-size:11.5px;color:#64748b;line-height:1.7;margin-top:10px}
+.note-box b{color:#475569}
+
+/* 变异统计总览卡片 */
+.mut-stats-card{background:#0f172a;border-radius:6px;padding:10px 12px;margin-bottom:10px;border:1px solid #334155}
+.mut-stats-card .mst{color:#60a5fa;font-weight:600;font-size:10px;margin-bottom:8px;letter-spacing:.05em}
+.mut-stats-row{display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:5px;color:#94a3b8}
+.mut-stats-row b{color:#e2e8f0;font-family:monospace}
+.mut-dim-bars{margin:8px 0}
+.mut-dim-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:10px}
+.mut-dim-row .mdn{width:52px;color:#94a3b8;flex-shrink:0}
+.mut-dim-row .mdb{flex:1;height:5px;background:#1e293b;border-radius:3px;overflow:hidden}
+.mut-dim-row .mdf{height:100%;border-radius:3px;transition:width .3s}
+.mut-dim-row .mdv{width:32px;text-align:right;color:#64748b;font-family:monospace;font-size:9.5px;flex-shrink:0}
+.mut-trend-wrap{margin-top:8px}
+.mut-trend-wrap .mtt{font-size:10px;color:#64748b;margin-bottom:4px}
+#mutTrendCanvas{width:100%;height:70px;background:#0b1220;border-radius:4px;display:block}
+.mut-legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.mut-legend-item{display:flex;align-items:center;gap:3px;font-size:9px;color:#64748b}
+.mut-legend-item .mld{width:8px;height:8px;border-radius:50%}
+
+/* 消融对比模式 */
+.compare-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0}
+.compare-toggle-row label{font-size:13px;color:#334155;font-weight:500}
+.toggle-switch{position:relative;width:40px;height:22px;background:#cbd5e1;border-radius:11px;cursor:pointer;transition:.2s}
+.toggle-switch.on{background:#3b82f6}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-switch.on::after{left:20px}
+.ab-groups{display:none;gap:12px;margin-top:10px}
+.ab-groups.visible{display:flex}
+.ab-group{flex:1;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px}
+.ab-group.active{border-color:#3b82f6;background:#eff6ff}
+.ab-group h4{font-size:12px;margin-bottom:8px;color:#1e293b;display:flex;align-items:center;gap:6px}
+.ab-group h4 .ab-tag{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.ab-group.a h4 .ab-tag{background:#3b82f6;color:#fff}
+.ab-group.b h4 .ab-tag{background:#ef4444;color:#fff}
+.ab-group .form-row{margin-bottom:6px}
+.ab-group .form-row label{font-size:11px;margin-right:6px}
+.ab-group .form-row input[type=range]{margin:0 6px;height:3px}
+.ab-group .form-row .val{font-size:10.5px;width:32px}
+.compare-summary{font-size:11px;color:#fbbf24;font-family:monospace;text-align:center;flex:1}
+.compare-summary .csa{color:#60a5fa}
+.compare-summary .csb{color:#f87171}
+
+/* 对比模式布局 */
+#simPage.compare-mode{grid-template-columns:1fr 370px 370px;grid-template-rows:52px 1fr 1fr 32px}
+#simPage.compare-mode #canvasWrap{grid-row:2/3;grid-column:1/2}
+#simPage.compare-mode #canvasWrapB{grid-row:3/4;grid-column:1/2;position:relative;background:#f8fafc;overflow:hidden;border-top:1px solid #cbd5e1}
+#simPage.compare-mode #panelA1{grid-row:2/3;grid-column:2/3}
+#simPage.compare-mode #panelB1{grid-row:3/4;grid-column:2/3;border-top:1px solid #cbd5e1}
+#simPage.compare-mode #panelA2{grid-row:2/3;grid-column:3/4}
+#simPage.compare-mode #panelB2{grid-row:3/4;grid-column:3/4;border-top:1px solid #cbd5e1}
+#simPage.compare-mode .panel-label{position:absolute;top:8px;left:8px;background:rgba(255,255,255,.92);padding:3px 10px;border-radius:4px;font-size:10px;font-weight:600;z-index:10;border:1px solid #e2e8f0}
+#simPage.compare-mode .panel-label.a{color:#3b82f6}
+#simPage.compare-mode .panel-label.b{color:#ef4444}
+.compare-status{display:flex;gap:20px;align-items:center}
+.compare-status .cs-item{font-size:10px;color:#94a3b8}
+.compare-status .cs-item b{color:#e2e8f0;font-family:monospace}
+.compare-status .cs-a{color:#60a5fa}
+.compare-status .cs-b{color:#f87171}
+
 /* ==================== 模拟主界面 ==================== */
 #simPage{display:none;height:100vh}
 #simPage.visible{display:grid;grid-template-columns:1fr 370px 370px;grid-template-rows:52px 1fr 32px;height:100vh;gap:1px;background:#cbd5e1}
@@ -72,7 +134,7 @@ button.green:hover{background:#047857}
 .overlay-badge .v{color:#0f172a;font-weight:600;font-family:monospace}
 
 /* 面板 */
-.panel{background:#1e293b;display:flex;flex-direction:column;overflow:hidden}
+.panel{background:#1e293b;display:flex;flex-direction:column;overflow:hidden;position:relative}
 .tabs{display:flex;border-bottom:1px solid #334155;flex-shrink:0}
 .tab{padding:9px 11px;font-size:11px;cursor:pointer;color:#94a3b8;border-bottom:2px solid transparent;transition:.15s;user-select:none;white-space:nowrap;flex-shrink:0}
 .tab.active{color:#60a5fa;border-bottom-color:#3b82f6;background:#0f172a}
@@ -175,6 +237,9 @@ button.green:hover{background:#047857}
 <div class="setup-section">
 <h3>圈层布局</h3>
 <div class="preset-row" id="circlePresets"></div>
+<div class="note-box">
+📝 <b>演示说明：</b>当前圈层为预分配（每圈层节点数可调），用于快速验证 AMSI 机制。正式实验中将接入真实微博转发/评论互文网络，通过 Louvain/Leiden 社区发现算法识别圈层，并以模体度分布为结构效度校验指标。
+</div>
 </div>
 
 <div class="setup-section">
@@ -185,6 +250,54 @@ button.green:hover{background:#047857}
 <div class="setup-section">
 <h3>消融实验（点击移除对应组件）</h3>
 <div class="ablation-list" id="ablationList"></div>
+</div>
+
+<div class="setup-section">
+<h3>消融对比模式</h3>
+<div class="compare-toggle-row">
+<label>🔬 启用 A/B 双条件并行对比</label>
+<div class="toggle-switch" id="compareToggle" onclick="toggleCompareMode()"></div>
+</div>
+<div class="ab-groups" id="abGroups">
+<div class="ab-group a">
+<h4><span class="ab-tag">A</span> 条件 A</h4>
+<div class="form-row"><label>策略</label>
+<select id="pa-strategy" style="width:100%">
+<option value="mixed">混合策略</option>
+<option value="heat">热度优先</option>
+<option value="interest">兴趣匹配</option>
+</select></div>
+<div class="form-row"><label>w₂ 圈层互文</label><input type="range" id="pa-w2" min="0" max="100" value="25"><span class="val" id="va-w2">0.25</span></div>
+<div class="form-row"><label>w₁ 内容匹配</label><input type="range" id="pa-w1" min="0" max="100" value="35"><span class="val" id="va-w1">0.35</span></div>
+<div class="form-row"><label>消融项</label>
+<select id="pa-ablation" style="width:100%">
+<option value="">无</option>
+<option value="noFriend">移除朋友信号</option>
+<option value="noThreshold">移除阈值机制</option>
+<option value="noDecay">移除刺激衰减</option>
+<option value="noLLM">移除LLM改写</option>
+</select></div>
+</div>
+<div class="ab-group b">
+<h4><span class="ab-tag">B</span> 条件 B</h4>
+<div class="form-row"><label>策略</label>
+<select id="pb-strategy" style="width:100%">
+<option value="mixed">混合策略</option>
+<option value="heat">热度优先</option>
+<option value="interest">兴趣匹配</option>
+</select></div>
+<div class="form-row"><label>w₂ 圈层互文</label><input type="range" id="pb-w2" min="0" max="100" value="0"><span class="val" id="vb-w2">0.00</span></div>
+<div class="form-row"><label>w₁ 内容匹配</label><input type="range" id="pb-w1" min="0" max="100" value="35"><span class="val" id="vb-w1">0.35</span></div>
+<div class="form-row"><label>消融项</label>
+<select id="pb-ablation" style="width:100%">
+<option value="">无</option>
+<option value="noFriend">移除朋友信号</option>
+<option value="noThreshold">移除阈值机制</option>
+<option value="noDecay">移除刺激衰减</option>
+<option value="noLLM">移除LLM改写</option>
+</select></div>
+</div>
+</div>
 </div>
 
 <div class="setup-section">
@@ -224,6 +337,7 @@ button.green:hover{background:#047857}
 <div id="simPage">
 <header>
 <h1>AMSI 文本主体传播模拟 <span id="simSubtitle"></span></h1>
+<div class="compare-summary" id="compareSummary" style="display:none"></div>
 <div class="controls">
 <button id="btnStart">▶ 开始</button>
 <button id="btnStep" class="sec" disabled>⏭ 单步</button>
@@ -233,7 +347,8 @@ button.green:hover{background:#047857}
 </header>
 <div id="canvasWrap">
 <canvas id="network"></canvas>
-<div class="hint"><b>AMSI 两层机制</b><br>层1 算法互文匹配：R_alg = Σwᵢ·fᵢ → 推送候选文本<br>层2 文本接纳判定：累积刺激 ≥ ε_B → 触发文本感染（LLM改写）<br>六维风格签名驱动改写 · 弱关系朋友信号进入评分</div>
+<div class="panel-label a" id="canvasALabel" style="display:none">条件 A</div>
+<div class="hint"><b>AMSI 两层机制</b><br>层1 算法互文匹配：R_alg = Σwᵢ·fᵢ → 推送候选文本<br>层2 文本接纳判定：累积刺激 ≥ ε_B → 触发文本感染（LLM改写）<br>六维风格签名驱动改写 · 弱关系朋友信号进入评分<br><span style="color:#94a3b8">※ 当前圈层为演示预分配，正式版本接 Louvain 社区发现</span></div>
 <div class="legend">
 <div class="legend-title">文本生成节点状态</div>
 <div class="legend-item"><div class="dot" style="background:#94a3b8"></div>未激活</div>
@@ -245,7 +360,7 @@ button.green:hover{background:#047857}
 </div>
 <div class="overlay-badge" id="netBadge"></div>
 </div>
-<aside class="panel">
+<aside class="panel" id="panelA1">
 <div class="tabs">
 <div class="tab active" data-tab="audit">算法审计</div>
 <div class="tab" data-tab="threshold">阈值状态</div>
@@ -253,9 +368,23 @@ button.green:hover{background:#047857}
 </div>
 <div class="pane active" id="pane-audit"><div id="auditList"><div class="empty">点击「开始」后<br>实时展示每轮 R_alg 算法推送的完整计算过程</div></div></div>
 <div class="pane" id="pane-threshold"><div id="thresholdList"><div class="empty">尚无节点激活</div></div></div>
-<div class="pane" id="pane-mutation"><div id="mutationList"><div class="empty">尚无文本变异<br>每次 LLM 改写后此处展示六维意义变异向量</div></div></div>
+<div class="pane" id="pane-mutation">
+<div class="mut-stats-card">
+<div class="mst">📊 变异统计总览</div>
+<div class="mut-stats-row"><span>累计改写次数</span><b id="ms-count">0</b></div>
+<div class="mut-dim-bars" id="ms-dimBars"></div>
+<div class="mut-stats-row"><span>平均语义相似度</span><b id="ms-avgCos">0.000</b></div>
+<div class="mut-stats-row"><span>平均文本相似度</span><b id="ms-avgText">0.000</b></div>
+<div class="mut-trend-wrap">
+<div class="mtt">语义距离随时间步变化趋势</div>
+<canvas id="mutTrendCanvas"></canvas>
+<div class="mut-legend" id="ms-legend"></div>
+</div>
+</div>
+<div id="mutationList"><div class="empty">尚无文本变异<br>每次 LLM 改写后此处展示六维意义变异向量</div></div>
+</div>
 </aside>
-<aside class="panel">
+<aside class="panel" id="panelA2">
 <div class="tabs">
 <div class="tab active" data-tab="human">人工节点</div>
 <div class="tab" data-tab="log">文本感染日志</div>
@@ -265,12 +394,56 @@ button.green:hover{background:#047857}
 <div class="pane" id="pane-log"><div id="logList"><div class="empty">尚无记录</div></div></div>
 <div class="pane" id="pane-network"><div id="netMetrics"><div class="empty">尚无网络数据</div></div></div>
 </aside>
+<div id="canvasWrapB" style="display:none">
+<canvas id="networkB"></canvas>
+<div class="panel-label b">条件 B</div>
+<div class="hint" style="top:30px"><b>AMSI 两层机制</b><br>层1 算法互文匹配：R_alg = Σwᵢ·fᵢ → 推送候选文本<br>层2 文本接纳判定：累积刺激 ≥ ε_B → 触发文本感染（LLM改写）<br><span style="color:#94a3b8">※ 当前圈层为演示预分配，正式版本接 Louvain 社区发现</span></div>
+<div class="overlay-badge" id="netBadgeB" style="top:30px"></div>
+</div>
+<aside class="panel" id="panelB1" style="display:none">
+<div class="panel-label b">条件 B</div>
+<div class="tabs">
+<div class="tab active" data-tab="auditB">算法审计</div>
+<div class="tab" data-tab="thresholdB">阈值状态</div>
+<div class="tab" data-tab="mutationB">意义变异</div>
+</div>
+<div class="pane active" id="pane-auditB"><div id="auditListB"><div class="empty">点击「开始」后<br>实时展示每轮 R_alg 算法推送的完整计算过程</div></div></div>
+<div class="pane" id="pane-thresholdB"><div id="thresholdListB"><div class="empty">尚无节点激活</div></div></div>
+<div class="pane" id="pane-mutationB">
+<div class="mut-stats-card">
+<div class="mst">📊 变异统计总览</div>
+<div class="mut-stats-row"><span>累计改写次数</span><b id="ms-countB">0</b></div>
+<div class="mut-dim-bars" id="ms-dimBarsB"></div>
+<div class="mut-stats-row"><span>平均语义相似度</span><b id="ms-avgCosB">0.000</b></div>
+<div class="mut-stats-row"><span>平均文本相似度</span><b id="ms-avgTextB">0.000</b></div>
+<div class="mut-trend-wrap">
+<div class="mtt">语义距离随时间步变化趋势</div>
+<canvas id="mutTrendCanvasB"></canvas>
+<div class="mut-legend" id="ms-legendB"></div>
+</div>
+</div>
+<div id="mutationListB"><div class="empty">尚无文本变异<br>每次 LLM 改写后此处展示六维意义变异向量</div></div>
+</div>
+</aside>
+<aside class="panel" id="panelB2" style="display:none">
+<div class="panel-label b">条件 B</div>
+<div class="tabs">
+<div class="tab active" data-tab="logB">文本感染日志</div>
+<div class="tab" data-tab="networkB">网络指标</div>
+</div>
+<div class="pane active" id="pane-logB"><div id="logListB"><div class="empty">尚无记录</div></div></div>
+<div class="pane" id="pane-networkB"><div id="netMetricsB"><div class="empty">尚无网络数据</div></div></div>
+</aside>
 <div class="statusbar">
 <span>时间步 <b id="s-step">0</b></span>
 <span>已感染 <b id="s-infected">0</b>/<b id="s-total">0</b></span>
 <span>活跃文本 <b id="s-texts">0</b></span>
 <span>API <b id="s-calls">0</b></span>
 <span>策略 <b id="s-strategy">混合</b></span>
+<div class="compare-status" id="compareStatus" style="display:none">
+<span class="cs-item"><span class="cs-a">A:</span> 感染<b id="cs-a-inf">0</b> · 文本<b id="cs-a-txt">0</b> · 跨圈<b id="cs-a-cross">0</b></span>
+<span class="cs-item"><span class="cs-b">B:</span> 感染<b id="cs-b-inf">0</b> · 文本<b id="cs-b-txt">0</b> · 跨圈<b id="cs-b-cross">0</b></span>
+</div>
 </div>
 </div>
 
@@ -498,11 +671,27 @@ function initSetup() {
   bind('p-decay','v-decay', v => (v/100).toFixed(2));
   bind('p-nodesPerCircle','v-nodesPerCircle', null);
 
+  // A/B 对比组滑块绑定
+  const bindAB = (id, vid, fn) => {
+    const el = document.getElementById(id), v = document.getElementById(vid);
+    if (!el || !v) return;
+    const upd = () => { v.textContent = fn ? fn(parseFloat(el.value)) : el.value; };
+    el.addEventListener('input', upd); upd();
+  };
+  bindAB('pa-w1','va-w1', v => (v/100).toFixed(2));
+  bindAB('pa-w2','va-w2', v => (v/100).toFixed(2));
+  bindAB('pb-w1','vb-w1', v => (v/100).toFixed(2));
+  bindAB('pb-w2','vb-w2', v => (v/100).toFixed(2));
+
   document.getElementById('btnLaunch').onclick = () => {
     readParams();
     document.getElementById('setupPage').classList.add('setup-hidden');
     document.getElementById('simPage').classList.add('visible');
-    initSim();
+    if (compareMode) {
+      initCompareSim();
+    } else {
+      initSim();
+    }
   };
 }
 
@@ -560,7 +749,10 @@ function resize() {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   draw();
 }
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => {
+  resize();
+  if (compareMode && S_B) resizeB();
+});
 
 /* ============================================================
  *  圈层重合度 O_AB
@@ -963,6 +1155,36 @@ async function runOneStep() {
   for (const x of topK) {
     const node = x.node, calc = x.calc;
     if (node.isHuman) {
+      // 对比模式下A组也跳过人工交互，保证对比公平
+      if (compareMode && S_B) {
+        node.stimulus += calc.total;
+        const thresholdMet = activeAblations.has('noThreshold') ? true : node.stimulus >= node.theta;
+        if (thresholdMet) {
+          const srcSig = x.text.style;
+          const newText = activeAblations.has('noLLM') ? x.text.text : templateRewrite(x.text.text, node);
+          node.state = 'infected'; node.text = newText;
+          node.parentTextId = x.text.originId;
+          node.receiveStep = S.timeStep; node.stimulus = 0;
+          const mut = mutationVector(srcSig, node.sig);
+          mut._srcText = x.text.text; mut._tgtText = newText;
+          mut._textSim = textSimilarity(x.text.text, newText);
+          mut._node = node; mut._step = S.timeStep;
+          S.mutations.push(mut); renderMutation(mut);
+          S.activeTexts.push({
+            text:newText, style:{...node.sig}, originCircle:node.circle,
+            originNode:node, originId:'n'+node.id+'_s'+S.timeStep,
+            step:S.timeStep, heat:0.6
+          });
+          S.activeTexts.forEach(t => t.heat *= 0.9);
+          addLog(node, newText);
+          updateAuditEntry(node, 'PASS');
+          S.edges.push({ from:x.text.originNode.id, to:node.id, type:'repost', fromCircle:x.text.originCircle, toCircle:node.circle });
+        } else {
+          node.state = 'active';
+          updateAuditEntry(node, 'ACCUM');
+        }
+        continue;
+      }
       node.stimulus += calc.total;
       S.waitingHuman = true;
       S.pendingHuman = { text:x.text, calc, node };
@@ -1108,6 +1330,134 @@ function renderMutation(mut) {
     <div class="to-text">→ ${mut._tgtText}</div>
     <div class="vec">${dimsHtml}</div>`;
   list.appendChild(e); list.scrollTop = list.scrollHeight;
+  updateMutationStats();
+}
+
+/* ============================================================
+ *  变异统计总览
+ * ============================================================ */
+function initMutationStats() {
+  // 初始化六维进度条
+  const bars = document.getElementById('ms-dimBars');
+  if (!bars) return;
+  let html = '';
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  dimKeys.forEach((k, i) => {
+    html += `<div class="mut-dim-row">
+      <span class="mdn">${DIM_NAMES[i]}</span>
+      <div class="mdb"><div class="mdf" id="ms-bar-${k}" style="width:0%;background:${DIM_COLORS[i]}"></div></div>
+      <span class="mdv" id="ms-val-${k}">0.00</span>
+    </div>`;
+  });
+  bars.innerHTML = html;
+  // 图例
+  const legend = document.getElementById('ms-legend');
+  if (legend) {
+    legend.innerHTML = DIM_NAMES.map((n, i) => 
+      `<span class="mut-legend-item"><span class="mld" style="background:${DIM_COLORS[i]}"></span>${n}</span>`
+    ).join('');
+  }
+}
+
+function updateMutationStats() {
+  if (!S.mutations.length) return;
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  // 累计改写次数
+  document.getElementById('ms-count').textContent = S.mutations.length;
+  // 六维平均变异量（绝对差的平均）
+  const avgDims = {};
+  dimKeys.forEach(k => {
+    const sum = S.mutations.reduce((s, m) => s + Math.abs(m[k].delta), 0);
+    avgDims[k] = sum / S.mutations.length;
+    const bar = document.getElementById('ms-bar-' + k);
+    const val = document.getElementById('ms-val-' + k);
+    if (bar) bar.style.width = (avgDims[k] * 100).toFixed(0) + '%';
+    if (val) val.textContent = avgDims[k].toFixed(2);
+  });
+  // 平均语义相似度
+  const avgCos = S.mutations.reduce((s, m) => s + m._cosSim, 0) / S.mutations.length;
+  document.getElementById('ms-avgCos').textContent = avgCos.toFixed(3);
+  // 平均文本相似度
+  const avgText = S.mutations.reduce((s, m) => s + m._textSim, 0) / S.mutations.length;
+  document.getElementById('ms-avgText').textContent = avgText.toFixed(3);
+  // 绘制趋势图
+  drawMutTrend();
+}
+
+function drawMutTrend() {
+  const cv = document.getElementById('mutTrendCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const rect = cv.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = rect.width * dpr; cv.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+  if (!S.mutations.length) return;
+
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  // 按时间步聚合平均变异距离
+  const stepData = {};
+  S.mutations.forEach(m => {
+    const step = m._step;
+    if (!stepData[step]) stepData[step] = { count: 0, dims: dimKeys.map(() => 0) };
+    stepData[step].count++;
+    dimKeys.forEach((k, i) => {
+      stepData[step].dims[i] += Math.abs(m[k].delta);
+    });
+  });
+  const steps = Object.keys(stepData).map(Number).sort((a,b) => a-b);
+  if (steps.length < 1) return;
+  // 归一化平均
+  steps.forEach(s => {
+    stepData[s].dims = stepData[s].dims.map(v => v / stepData[s].count);
+  });
+  // 计算最大值用于缩放
+  let maxVal = 0;
+  steps.forEach(s => { stepData[s].dims.forEach(v => { if (v > maxVal) maxVal = v; }); });
+  if (maxVal < 0.05) maxVal = 0.5;
+  maxVal = Math.ceil(maxVal * 10) / 10;
+
+  const padL = 24, padR = 8, padT = 6, padB = 14;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  // Y轴刻度
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#475569'; ctx.font = '9px monospace'; ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + chartH * (i / 4);
+    const v = maxVal * (1 - i/4);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillText(v.toFixed(1), padL - 3, y + 3);
+  }
+  // X轴标签
+  ctx.fillStyle = '#475569'; ctx.font = '9px monospace'; ctx.textAlign = 'center';
+  steps.forEach((s, i) => {
+    const x = padL + chartW * (steps.length <= 1 ? 0.5 : (i / (steps.length - 1)));
+    ctx.fillText('t'+s, x, H - 4);
+  });
+  // 绘制六条折线
+  dimKeys.forEach((k, di) => {
+    ctx.strokeStyle = DIM_COLORS[di];
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    steps.forEach((s, i) => {
+      const x = padL + chartW * (steps.length <= 1 ? 0.5 : (i / (steps.length - 1)));
+      const v = stepData[s].dims[di];
+      const y = padT + chartH * (1 - v / maxVal);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    // 数据点
+    steps.forEach((s, i) => {
+      const x = padL + chartW * (steps.length <= 1 ? 0.5 : (i / (steps.length - 1)));
+      const v = stepData[s].dims[di];
+      const y = padT + chartH * (1 - v / maxVal);
+      ctx.fillStyle = DIM_COLORS[di];
+      ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
+    });
+  });
 }
 
 /* ============================================================
@@ -1432,6 +1782,7 @@ function initSim() {
   buildNodes();
   resetSim(true);
   resize();
+  initMutationStats();
   // 副标题
   const stratLabel = { heat:'热度优先', interest:'兴趣匹配', mixed:'混合策略' }[S.params.strategy] || '混合';
   const abl = S.params.ablations.length ? ' · 消融×'+S.params.ablations.length : '';
@@ -1439,12 +1790,793 @@ function initSim() {
 }
 
 /* ============================================================
+ *  消融对比模式（双条件并行）
+ * ============================================================ */
+let compareMode = false;
+let S_A = null, S_B = null;
+let cvB, ctxB, WB = 0, HB = 0;
+let compareRunning = false;
+let compareStep = 0;
+let savedAblations = null;
+
+// 切换对比模式
+window.toggleCompareMode = function() {
+  const t = document.getElementById('compareToggle');
+  const g = document.getElementById('abGroups');
+  compareMode = !compareMode;
+  t.classList.toggle('on', compareMode);
+  g.classList.toggle('visible', compareMode);
+};
+
+// 深拷贝网络结构（节点、边、朋友关系）用于B组
+function cloneNetworkState(srcState) {
+  const state = {
+    nodes: JSON.parse(JSON.stringify(srcState.nodes)),
+    edges: JSON.parse(JSON.stringify(srcState.edges)),
+    activeTexts: [],
+    timeStep: 0,
+    running: false,
+    waitingHuman: false,
+    apiCalls: 0,
+    params: {...srcState.params},
+    auditRound: [],
+    humanHistory: [],
+    pendingHuman: null,
+    arrows: [],
+    mutations: [],
+    netMetrics: null,
+  };
+  // 恢复 friends 引用和 humanNode 引用
+  state.nodes.forEach((n, i) => {
+    n.friends = [...srcState.nodes[i].friends];
+  });
+  state.humanNode = state.nodes.find(n => n.isHuman);
+  return state;
+}
+
+// 计算跨圈传播数
+function countCrossCircle(state) {
+  let count = 0;
+  state.nodes.forEach(n => {
+    if (n.state === 'infected' && n.parentTextId && n.receiveStep > 0) {
+      // 找到源文本所在圈层
+      const originNode = state.nodes.find(nd => 
+        state.activeTexts.some(t => t.originId === n.parentTextId && t.originNode.id === nd.id)
+      );
+      if (originNode && originNode.circle !== n.circle) count++;
+    }
+  });
+  return count;
+}
+
+// B组单步传播
+async function runBStep() {
+  const st = S_B;
+  if (st.waitingHuman) return false;
+  st.timeStep++;
+  // 衰减
+  if (!st._ablations.has('noDecay')) {
+    st.nodes.forEach(n => { if (n.state !== 'infected') { n.stimulus *= (1-st.params.decay); if (n.stimulus<0.01) n.stimulus=0; } });
+  }
+  const candidates = st.nodes.filter(n => n.state !== 'infected');
+  if (!candidates.length || !st.activeTexts.length) return false;
+
+  // 评分（B组参数）
+  const scored = candidates.map(n => {
+    let best=null, bestCalc=null;
+    st.activeTexts.forEach(t => { const c = computeBRalg(t, n); if (!bestCalc||c.total>bestCalc.total) { best=t; bestCalc=c; } });
+    return { node:n, text:best, calc:bestCalc };
+  });
+  scored.sort((a,b) => b.calc.total - a.calc.total);
+  const topK = scored.slice(0, st.params.topK);
+
+  // 审计B
+  const audit = { step:st.timeStep, entries: topK.map(x => ({
+    node:x.node, text:x.text, calc:x.calc,
+    projected: x.node.stimulus + x.calc.total, theta: x.node.theta
+  }))};
+  st.auditRound.push(audit);
+  renderBAudit(audit);
+
+  // 推送箭头B
+  topK.forEach(x => {
+    st.arrows.push({ fromId:x.text.originNode.id, toId:x.node.id, t:0, color:CIRCLES[x.node.circle].color });
+    x.node.pulse = 1;
+  });
+  drawB(); animateB();
+  await sleep(550);
+
+  // 处理推送
+  for (const x of topK) {
+    const node = x.node, calc = x.calc;
+    if (node.isHuman) { node.state = 'infected'; node.text = x.text.text; node.receiveStep = st.timeStep; node.stimulus = 0; continue; } // B组跳过人工交互
+    node.stimulus += calc.total;
+    const thresholdMet = st._ablations.has('noThreshold') ? true : node.stimulus >= node.theta;
+    if (thresholdMet) {
+      const srcSig = x.text.style;
+      const newText = st._ablations.has('noLLM') ? x.text.text : templateRewrite(x.text.text, node);
+      node.state = 'infected'; node.text = newText;
+      node.parentTextId = x.text.originId;
+      node.receiveStep = st.timeStep; node.stimulus = 0;
+      // 变异向量
+      const mut = mutationVector(srcSig, node.sig);
+      mut._srcText = x.text.text;
+      mut._tgtText = newText;
+      mut._textSim = textSimilarity(x.text.text, newText);
+      mut._node = node;
+      mut._step = st.timeStep;
+      st.mutations.push(mut);
+      renderBMutation(mut);
+      // 新活跃文本
+      st.activeTexts.push({
+        text:newText, style:{...node.sig}, originCircle:node.circle,
+        originNode:node, originId:'n'+node.id+'_s'+st.timeStep,
+        step:st.timeStep, heat:0.6
+      });
+      st.activeTexts.forEach(t => t.heat *= 0.9);
+      addBLog(node, newText);
+      updateBAuditEntry(node, 'PASS');
+      st.edges.push({ from:x.text.originNode.id, to:node.id, type:'repost', fromCircle:x.text.originCircle, toCircle:node.circle });
+    } else {
+      node.state = 'active';
+      updateBAuditEntry(node, 'ACCUM');
+    }
+  }
+  computeBNetMetrics();
+  updateBThresholdPanel();
+  updateBMutationStats();
+  drawB();
+  return true;
+}
+
+// B组 R_alg 计算
+function computeBRalg(text, node) {
+  const st = S_B;
+  const p = st.params;
+  const sim = Math.max(0, cosSim(signatureVector(text.style), signatureVector(node.sig)));
+  const overlap = (text.originCircle === node.circle) ? 1 : (Math.abs(text.originCircle - node.circle) === 1 ? 0.35 : 0.15);
+  // 朋友信号
+  let fSig = 0;
+  if (!st._ablations.has('noFriend') && node.friends.length) {
+    let c = 0;
+    node.friends.forEach(fid => {
+      const f = st.nodes[fid]; if (!f) return;
+      if (f.state === 'infected' && f.text === text.text) c++;
+      else if (f.state === 'infected' && f.text && text.originId && f.parentTextId === text.originId) c++;
+    });
+    fSig = c / Math.max(1, node.friends.length);
+  }
+  const heat = text.heat;
+  const recency = Math.max(0, 1 - (st.timeStep - text.step) * 0.15);
+
+  let contrib;
+  if (p.strategy === 'heat') {
+    contrib = { sim:0, overlap:0, friend:0, heat:p.wHeat*heat, recency:p.wRecency*recency };
+  } else if (p.strategy === 'interest') {
+    contrib = { sim:p.w1*sim, overlap:p.w2*overlap, friend:0, heat:0, recency:0 };
+  } else {
+    contrib = { sim:p.w1*sim, overlap:p.w2*overlap, friend:p.wFriend*fSig, heat:p.wHeat*heat, recency:p.wRecency*recency };
+  }
+  return { total: Object.values(contrib).reduce((a,b)=>a+b,0), contrib, raw:{sim,overlap,fSig,heat,recency} };
+}
+
+// B组绘制
+function drawB() {
+  if (!ctxB) return;
+  ctxB.clearRect(0, 0, WB, HB);
+  const st = S_B;
+  // 圈层背景
+  CIRCLES.forEach(c => {
+    ctxB.beginPath();
+    ctxB.arc(c.cx * WB, c.cy * HB, c.r * HB, 0, Math.PI*2);
+    ctxB.fillStyle = c.color + '10'; ctxB.fill();
+    ctxB.strokeStyle = c.color + '40'; ctxB.lineWidth = 1.5;
+    ctxB.setLineDash([6,6]); ctxB.stroke(); ctxB.setLineDash([]);
+    ctxB.fillStyle = c.color + 'cc';
+    ctxB.font = '600 11px -apple-system,sans-serif';
+    ctxB.textAlign = 'center';
+    ctxB.fillText(c.name, c.cx * WB, (c.cy - c.r - 0.025) * HB);
+  });
+  // 边
+  for (const e of st.edges) {
+    const s = st.nodes[e.from], t = st.nodes[e.to];
+    if (!s || !t) continue;
+    const sx = s.x * WB, sy = s.y * HB, tx = t.x * WB, ty = t.y * HB;
+    const edgeColor = e.type === 'repost' ? 'rgba(16,185,129,0.18)' : 'rgba(245,158,11,0.18)';
+    ctxB.strokeStyle = edgeColor;
+    ctxB.lineWidth = e.fromCircle !== e.toCircle ? 1.5 : 1;
+    if (e.fromCircle !== e.toCircle) { ctxB.setLineDash([4,3]); } else { ctxB.setLineDash([]); }
+    ctxB.beginPath(); ctxB.moveTo(sx, sy); ctxB.lineTo(tx, ty); ctxB.stroke();
+    ctxB.setLineDash([]);
+  }
+  // 弱关系
+  ctxB.strokeStyle = 'rgba(139,92,246,0.12)'; ctxB.lineWidth = 1; ctxB.setLineDash([2,3]);
+  st.nodes.forEach(n => n.friends.forEach(fid => {
+    const f = st.nodes[fid]; if (!f || fid <= n.id) return;
+    ctxB.beginPath(); ctxB.moveTo(n.x*WB, n.y*HB); ctxB.lineTo(f.x*WB, f.y*HB); ctxB.stroke();
+  }));
+  ctxB.setLineDash([]);
+  // 推送箭头
+  st.arrows.forEach(a => {
+    const src = st.nodes[a.fromId], tgt = st.nodes[a.toId];
+    const mx = (src.x+tgt.x)/2, my = Math.min(src.y,tgt.y)-0.04;
+    const bcx = (1-a.t)*(1-a.t)*src.x + 2*(1-a.t)*a.t*mx + a.t*a.t*tgt.x;
+    const bcy = (1-a.t)*(1-a.t)*src.y + 2*(1-a.t)*a.t*my + a.t*a.t*tgt.y;
+    ctxB.beginPath(); ctxB.moveTo(src.x*WB, src.y*HB);
+    ctxB.quadraticCurveTo(mx*WB, my*HB, bcx*WB, bcy*HB);
+    ctxB.strokeStyle = a.color; ctxB.lineWidth = 2;
+    ctxB.globalAlpha = (1-a.t)*0.85; ctxB.stroke(); ctxB.globalAlpha = 1;
+  });
+  // 节点
+  st.nodes.forEach(n => {
+    const x = n.x*WB, y = n.y*HB;
+    const baseR = n.isHuman ? 17 : 13;
+    if (n.pulse > 0) {
+      ctxB.beginPath(); ctxB.arc(x, y, baseR+13*n.pulse, 0, Math.PI*2);
+      const c = n.isHuman ? '168,85,247' : '251,191,36';
+      ctxB.fillStyle = `rgba(${c},${n.pulse*0.35})`; ctxB.fill();
+    }
+    ctxB.beginPath(); ctxB.arc(x, y, baseR, 0, Math.PI*2);
+    if (n.isHuman) ctxB.fillStyle = '#a855f7';
+    else if (n.state === 'infected') ctxB.fillStyle = CIRCLES[n.circle].color;
+    else if (n.state === 'active') ctxB.fillStyle = '#fbbf24';
+    else ctxB.fillStyle = '#94a3b8';
+    ctxB.fill();
+    ctxB.strokeStyle = 'rgba(255,255,255,.9)'; ctxB.lineWidth = 2; ctxB.stroke();
+    ctxB.fillStyle = '#fff';
+    ctxB.font = '600 10px -apple-system,sans-serif';
+    ctxB.textAlign = 'center'; ctxB.textBaseline = 'middle';
+    ctxB.fillText(n.isHuman ? '👤' : (n.id+1), x, y);
+    if (n.state === 'active' && n.stimulus > 0.05) {
+      const ratio = Math.min(1, n.stimulus / n.theta);
+      ctxB.beginPath();
+      ctxB.arc(x, y, baseR+3, -Math.PI/2, -Math.PI/2 + ratio*Math.PI*2);
+      ctxB.strokeStyle = ratio>0.7 ? '#fbbf24' : '#94a3b8';
+      ctxB.lineWidth = 2.5; ctxB.stroke();
+    }
+  });
+}
+
+function animateB() {
+  let need = false;
+  S_B.arrows.forEach(a => { a.t += 0.045; if (a.t < 1) need = true; });
+  S_B.arrows = S_B.arrows.filter(a => a.t < 1);
+  S_B.nodes.forEach(n => { if (n.pulse > 0) { n.pulse = Math.max(0, n.pulse-0.05); need = true; } });
+  if (need) { drawB(); requestAnimationFrame(animateB); }
+}
+
+// B组审计
+function renderBAudit(audit) {
+  const list = document.getElementById('auditListB');
+  if (!list) return;
+  if (list.querySelector('.empty')) list.innerHTML = '';
+  const sd = document.createElement('div'); sd.className = 'audit-step';
+  const title = document.createElement('div'); title.className = 'step-title';
+  const stratLabel = { heat:'热度优先', interest:'兴趣匹配', mixed:'混合策略' }[S_B.params.strategy] || '混合';
+  title.textContent = `▸ 第 ${audit.step} 步 · Top-${audit.entries.length} 推送 · ${stratLabel}`;
+  sd.appendChild(title);
+  audit.entries.forEach(e => {
+    const c = CIRCLES[e.node.circle];
+    const nd = document.createElement('div'); nd.className = 'audit-node';
+    const sig = e.node.sig;
+    nd.innerHTML = `
+      <div><span class="name">节点 ${e.node.id+1}</span>
+      <span class="tag" style="background:${c.color}22;color:${c.color};font-size:9px;padding:1px 5px;border-radius:3px;">${c.name}</span>
+      <span style="font-size:9px;color:#64748b;margin-left:4px">${sig.emotion.value}/${sig.stance.value}</span></div>
+      <div class="formula">
+        R = <b>${e.calc.contrib.sim.toFixed(2)}</b><span class="dim">(语义)</span>
+          + <b>${e.calc.contrib.overlap.toFixed(2)}</b><span class="dim">(圈层)</span>
+          + <b>${e.calc.contrib.friend.toFixed(2)}</b><span class="dim">(朋友)</span>
+          + <b>${e.calc.contrib.heat.toFixed(2)}</b><span class="dim">(热度)</span>
+          + <b>${e.calc.contrib.recency.toFixed(2)}</b><span class="dim">(时效)</span>
+        = <b>${e.calc.total.toFixed(3)}</b>
+      </div>
+      <div class="verdict" data-b-node-id="${e.node.id}">
+        刺激累积：${e.node.stimulus.toFixed(2)} + ${e.calc.total.toFixed(2)} =
+        <span style="color:#60a5fa;">${(e.node.stimulus+e.calc.total).toFixed(2)}</span>
+        / ε_B = ${e.node.theta.toFixed(2)}
+        <div class="bar"><div class="bar-inner" style="width:${Math.min(100,(e.node.stimulus+e.calc.total)/e.node.theta*100)}%"></div></div>
+      </div>`;
+    sd.appendChild(nd);
+  });
+  list.appendChild(sd); list.scrollTop = list.scrollHeight;
+}
+function updateBAuditEntry(node, verdict) {
+  const el = document.querySelector(`.verdict[data-b-node-id="${node.id}"]`);
+  if (!el) return;
+  if (verdict === 'PASS') {
+    el.classList.add('pass');
+    el.innerHTML = `✅ 超过阈值 ε_B=${node.theta.toFixed(2)}，触发文本感染`;
+  } else {
+    el.classList.add('accum');
+    el.innerHTML = `⏳ 未达阈值，累积中 · ${node.stimulus.toFixed(2)}/${node.theta.toFixed(2)}`;
+  }
+}
+
+// B组阈值面板
+function updateBThresholdPanel() {
+  const list = document.getElementById('thresholdListB');
+  if (!list) return;
+  const st = S_B;
+  const active = st.nodes.filter(n => n.state !== 'inactive' || n.stimulus > 0.01);
+  if (!active.length) { list.innerHTML = '<div class="empty">尚无节点激活</div>'; return; }
+  list.innerHTML = active.map(n => {
+    const c = CIRCLES[n.circle];
+    const ratio = Math.min(1, n.stimulus / n.theta);
+    const cls = n.state === 'infected' ? 'done' : ratio >= 0.7 ? 'over' : '';
+    const sig = n.sig;
+    return `<div class="node-row">
+      <span class="id">${n.isHuman?'👤':(n.id+1)}</span>
+      <span class="circle-tag" style="background:${c.color}22;color:${c.color};">${c.name}</span>
+      <div class="thr"><div class="thr-bar"><div class="thr-fill ${cls}" style="width:${ratio*100}%"></div></div></div>
+      <span class="vals">${n.stimulus.toFixed(2)}/${n.theta.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+}
+
+// B组变异
+function renderBMutation(mut) {
+  const list = document.getElementById('mutationListB');
+  if (!list) return;
+  if (list.querySelector('.empty')) list.innerHTML = '';
+  const e = document.createElement('div'); e.className = 'mutation-entry';
+  const node = mut._node;
+  const c = CIRCLES[node.circle];
+  let dimsHtml = '';
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  dimKeys.forEach((k, i) => {
+    const d = mut[k];
+    const bg = d.changed ? DIM_COLORS[i] + '22' : '#1e293b';
+    const fg = d.changed ? DIM_COLORS[i] : '#64748b';
+    dimsHtml += `<span class="dim-tag" style="background:${bg};color:${fg}">${DIM_NAMES[i]}: ${d.from}→${d.to}</span>`;
+  });
+  e.innerHTML = `
+    <div class="meta">
+      <span style="color:#60a5fa;font-weight:600">节点${node.id+1}</span>
+      <span class="tag" style="background:${c.color}22;color:${c.color}">${c.name}</span>
+      <span>步 ${mut._step}</span>
+      <span style="color:#8b5cf6">总变异: ${mut._total.toFixed(3)}</span>
+      <span style="color:#64748b">余弦: ${mut._cosSim.toFixed(3)}</span>
+    </div>
+    <div class="from-text">源: ${mut._srcText}</div>
+    <div class="to-text">→ ${mut._tgtText}</div>
+    <div class="vec">${dimsHtml}</div>`;
+  list.appendChild(e); list.scrollTop = list.scrollHeight;
+}
+
+// B组变异统计
+function initBMutationStats() {
+  const bars = document.getElementById('ms-dimBarsB');
+  if (!bars) return;
+  let html = '';
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  dimKeys.forEach((k, i) => {
+    html += `<div class="mut-dim-row">
+      <span class="mdn">${DIM_NAMES[i]}</span>
+      <div class="mdb"><div class="mdf" id="ms-barB-${k}" style="width:0%;background:${DIM_COLORS[i]}"></div></div>
+      <span class="mdv" id="ms-valB-${k}">0.00</span>
+    </div>`;
+  });
+  bars.innerHTML = html;
+  const legend = document.getElementById('ms-legendB');
+  if (legend) {
+    legend.innerHTML = DIM_NAMES.map((n, i) => 
+      `<span class="mut-legend-item"><span class="mld" style="background:${DIM_COLORS[i]}"></span>${n}</span>`
+    ).join('');
+  }
+}
+
+function updateBMutationStats() {
+  const st = S_B;
+  if (!st.mutations.length) return;
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  document.getElementById('ms-countB').textContent = st.mutations.length;
+  dimKeys.forEach(k => {
+    const sum = st.mutations.reduce((s, m) => s + Math.abs(m[k].delta), 0);
+    const avg = sum / st.mutations.length;
+    const bar = document.getElementById('ms-barB-' + k);
+    const val = document.getElementById('ms-valB-' + k);
+    if (bar) bar.style.width = (avg * 100).toFixed(0) + '%';
+    if (val) val.textContent = avg.toFixed(2);
+  });
+  const avgCos = st.mutations.reduce((s, m) => s + m._cosSim, 0) / st.mutations.length;
+  const avgText = st.mutations.reduce((s, m) => s + m._textSim, 0) / st.mutations.length;
+  const elCos = document.getElementById('ms-avgCosB');
+  const elText = document.getElementById('ms-avgTextB');
+  if (elCos) elCos.textContent = avgCos.toFixed(3);
+  if (elText) elText.textContent = avgText.toFixed(3);
+  drawBMutTrend();
+}
+
+function drawBMutTrend() {
+  const cv = document.getElementById('mutTrendCanvasB');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const rect = cv.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = rect.width * dpr; cv.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+  const st = S_B;
+  if (!st.mutations.length) return;
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  const stepData = {};
+  st.mutations.forEach(m => {
+    const step = m._step;
+    if (!stepData[step]) stepData[step] = { count: 0, dims: dimKeys.map(() => 0) };
+    stepData[step].count++;
+    dimKeys.forEach((k, i) => { stepData[step].dims[i] += Math.abs(m[k].delta); });
+  });
+  const steps = Object.keys(stepData).map(Number).sort((a,b) => a-b);
+  if (steps.length < 1) return;
+  steps.forEach(s => { stepData[s].dims = stepData[s].dims.map(v => v / stepData[s].count); });
+  let maxVal = 0;
+  steps.forEach(s => { stepData[s].dims.forEach(v => { if (v > maxVal) maxVal = v; }); });
+  if (maxVal < 0.05) maxVal = 0.5;
+  maxVal = Math.ceil(maxVal * 10) / 10;
+  const padL = 24, padR = 8, padT = 6, padB = 14;
+  const chartW = W - padL - padR, chartH = H - padT - padB;
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#475569'; ctx.font = '9px monospace'; ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + chartH * (i / 4);
+    const v = maxVal * (1 - i/4);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillText(v.toFixed(1), padL - 3, y + 3);
+  }
+  ctx.fillStyle = '#475569'; ctx.font = '9px monospace'; ctx.textAlign = 'center';
+  steps.forEach((s, i) => {
+    const x = padL + chartW * (steps.length <= 1 ? 0.5 : (i / (steps.length - 1)));
+    ctx.fillText('t'+s, x, H - 4);
+  });
+  dimKeys.forEach((k, di) => {
+    ctx.strokeStyle = DIM_COLORS[di]; ctx.lineWidth = 1.5; ctx.beginPath();
+    steps.forEach((s, i) => {
+      const x = padL + chartW * (steps.length <= 1 ? 0.5 : (i / (steps.length - 1)));
+      const v = stepData[s].dims[di];
+      const y = padT + chartH * (1 - v / maxVal);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    steps.forEach((s, i) => {
+      const x = padL + chartW * (steps.length <= 1 ? 0.5 : (i / (steps.length - 1)));
+      const v = stepData[s].dims[di];
+      const y = padT + chartH * (1 - v / maxVal);
+      ctx.fillStyle = DIM_COLORS[di];
+      ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
+    });
+  });
+}
+
+// B组日志
+function addBLog(node, text, isSeed) {
+  const list = document.getElementById('logListB');
+  if (!list) return;
+  if (list.querySelector('.empty')) list.innerHTML = '';
+  const c = CIRCLES[node.circle];
+  const sig = node.sig;
+  const e = document.createElement('div'); e.className = 'log-entry';
+  e.style.borderLeftColor = c.color;
+  e.innerHTML = `
+    <div class="meta">
+      <span class="node-id">节点 ${node.id+1}</span>
+      <span class="tag" style="background:${c.color}22;color:${c.color}">${c.name}</span>
+      <span>${sig?sig.emotion.value:''}/${sig?sig.stance.value:''}</span>
+      ${isSeed?'<span class="tag" style="background:#fbbf2422;color:#fbbf24">种子</span>':''}
+    </div>
+    <div class="content">${text}</div>`;
+  list.appendChild(e); list.scrollTop = list.scrollHeight;
+}
+
+// B组网络指标
+function computeBNetMetrics() {
+  const st = S_B;
+  const N = st.nodes.length;
+  const degree = Array(N).fill(0);
+  for (const e of st.edges) { degree[e.from]++; degree[e.to]++; }
+  const avgDeg = degree.reduce((a,b)=>a+b,0) / N;
+  const maxDeg = Math.max(...degree);
+  const adj = Array(N).fill(0).map(()=>new Set());
+  for (const e of st.edges) { adj[e.from].add(e.to); adj[e.to].add(e.from); }
+  let clustSum = 0, clustCount = 0;
+  for (let i = 0; i < N; i++) {
+    const nbrs = [...adj[i]];
+    if (nbrs.length < 2) continue;
+    let links = 0;
+    for (let j = 0; j < nbrs.length; j++)
+      for (let k = j+1; k < nbrs.length; k++)
+        if (adj[nbrs[j]].has(nbrs[k])) links++;
+    clustSum += 2*links / (nbrs.length*(nbrs.length-1));
+    clustCount++;
+  }
+  const avgClust = clustCount > 0 ? clustSum/clustCount : 0;
+  let motifs = 0;
+  for (let i = 0; i < N; i++)
+    for (const j of adj[i])
+      if (j > i)
+        for (const k of adj[j])
+          if (k > j && adj[i].has(k)) motifs++;
+  // 圈层重合度
+  const NC = CIRCLES.length;
+  const matrix = Array(NC).fill(0).map(() => Array(NC).fill(0));
+  for (const e of st.edges) {
+    if (e.fromCircle !== e.toCircle) { matrix[e.fromCircle][e.toCircle]++; matrix[e.toCircle][e.fromCircle]++; }
+  }
+  const total = st.edges.length || 1;
+  const overlap = matrix.map(row => row.map(v => v / total));
+  st.netMetrics = { avgDeg, maxDeg, avgClust, motifs, overlap, degree };
+  renderBNetMetrics();
+}
+function renderBNetMetrics() {
+  const el = document.getElementById('netMetricsB');
+  if (!el || !S_B.netMetrics) return;
+  const m = S_B.netMetrics;
+  let html = '';
+  html += `<div class="metric-card"><div class="mt">网络规模</div><div class="mv">节点数 <span>${S_B.nodes.length}</span> · 边数 <span>${S_B.edges.length}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">度分布</div><div class="mv">平均度 <span>${m.avgDeg.toFixed(2)}</span> · 最大度 <span>${m.maxDeg}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">聚类系数</div><div class="mv"><span>${m.avgClust.toFixed(4)}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">模体度（三角形计数）</div><div class="mv"><span>${m.motifs}</span></div></div>`;
+  el.innerHTML = html;
+}
+
+// B组徽章
+function updateBNetBadge() {
+  const m = S_B.netMetrics;
+  if (!m) return;
+  const badge = document.getElementById('netBadgeB');
+  if (badge) {
+    badge.innerHTML = `
+      <div class="row"><span class="lbl">节点</span><span class="v">${S_B.nodes.length}</span></div>
+      <div class="row"><span class="lbl">互文边</span><span class="v">${S_B.edges.length}</span></div>
+      <div class="row"><span class="lbl">平均度</span><span class="v">${m.avgDeg.toFixed(2)}</span></div>
+      <div class="row"><span class="lbl">聚类系数</span><span class="v">${m.avgClust.toFixed(3)}</span></div>`;
+  }
+}
+
+// 对比模式初始化
+function initCompareSim() {
+  // 先构建基础网络（A组使用S）
+  buildNodes();
+  resetSim(true);
+  resize();
+  initMutationStats();
+
+  // 读取A/B参数
+  const baseParams = S.params;
+  const aStrategy = document.getElementById('pa-strategy').value;
+  const bStrategy = document.getElementById('pb-strategy').value;
+  const aW1 = +document.getElementById('pa-w1').value / 100;
+  const bW1 = +document.getElementById('pb-w1').value / 100;
+  const aW2 = +document.getElementById('pa-w2').value / 100;
+  const bW2 = +document.getElementById('pb-w2').value / 100;
+  const aAbl = document.getElementById('pa-ablation').value;
+  const bAbl = document.getElementById('pb-ablation').value;
+
+  // A组使用S，更新其参数
+  S.params.strategy = aStrategy;
+  S.params.w1 = aW1;
+  S.params.w2 = aW2;
+  // A组消融设置
+  savedAblations = new Set(activeAblations); // 保存原始消融设置
+  activeAblations.clear();
+  if (aAbl) activeAblations.add(aAbl);
+
+  // 创建B组状态（深拷贝网络结构）
+  S_B = cloneNetworkState(S);
+  S_B.params.strategy = bStrategy;
+  S_B.params.w1 = bW1;
+  S_B.params.w2 = bW2;
+  S_B._ablations = new Set();
+  if (bAbl) S_B._ablations.add(bAbl);
+
+  // 初始化B组画布
+  cvB = document.getElementById('networkB');
+  ctxB = cvB.getContext('2d');
+  resizeB();
+  initBMutationStats();
+
+  // 显示对比模式布局
+  document.getElementById('simPage').classList.add('compare-mode');
+  document.getElementById('canvasWrapB').style.display = 'block';
+  document.getElementById('panelB1').style.display = 'flex';
+  document.getElementById('panelB2').style.display = 'flex';
+  document.getElementById('compareSummary').style.display = 'block';
+  document.getElementById('compareStatus').style.display = 'flex';
+  document.getElementById('canvasALabel').style.display = 'block';
+
+  // 生成对比摘要
+  const diffs = [];
+  if (aStrategy !== bStrategy) {
+    const al = {heat:'热度',interest:'兴趣',mixed:'混合'}[aStrategy];
+    const bl = {heat:'热度',interest:'兴趣',mixed:'混合'}[bStrategy];
+    diffs.push(`${al}策略 vs ${bl}策略`);
+  }
+  if (aW2 !== bW2) diffs.push(`w₂=${aW2.toFixed(2)} vs w₂=${bW2.toFixed(2)}`);
+  if (aW1 !== bW1) diffs.push(`w₁=${aW1.toFixed(2)} vs w₁=${bW1.toFixed(2)}`);
+  if (aAbl !== bAbl) {
+    const al = aAbl || '无消融';
+    const bl = bAbl || '无消融';
+    diffs.push(`${al} vs ${bl}`);
+  }
+  const summary = diffs.length ? diffs.join(' · ') : '参数相同';
+  document.getElementById('compareSummary').innerHTML = `<span class="csa">A</span>: ${summary.split(' vs ')[0]} · <span class="csb">B</span>: ${summary.split(' vs ')[1] || summary}`;
+  // 简化摘要
+  const aLabel = `${aStrategy==='heat'?'热度':aStrategy==='interest'?'兴趣':'混合'}策略 · w₂=${aW2.toFixed(2)}${aAbl?' · '+aAbl:''}`;
+  const bLabel = `${bStrategy==='heat'?'热度':bStrategy==='interest'?'兴趣':'混合'}策略 · w₂=${bW2.toFixed(2)}${bAbl?' · '+bAbl:''}`;
+  document.getElementById('compareSummary').innerHTML = `<span class="csa">A</span>: ${aLabel} &nbsp;vs&nbsp; <span class="csb">B</span>: ${bLabel}`;
+
+  // 副标题
+  document.getElementById('simSubtitle').textContent = `对比模式 · 同seed双条件`;
+
+  // 初始绘制B
+  drawB();
+  computeBNetMetrics();
+  updateBNetBadge();
+  updateBThresholdPanel();
+  updateCompareStatus();
+}
+
+function resizeB() {
+  if (!cvB) return;
+  const r = cvB.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  WB = r.width; HB = r.height;
+  cvB.width = WB * dpr; cvB.height = HB * dpr;
+  cvB.style.width = WB + 'px'; cvB.style.height = HB + 'px';
+  ctxB.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+// 更新对比状态栏
+function updateCompareStatus() {
+  const aInf = S.nodes.filter(n => n.state === 'infected').length;
+  const bInf = S_B.nodes.filter(n => n.state === 'infected').length;
+  const aTxt = S.activeTexts.length;
+  const bTxt = S_B.activeTexts.length;
+  // 跨圈传播数
+  let aCross = 0, bCross = 0;
+  S.nodes.forEach(n => {
+    if (n.state === 'infected' && n.receiveStep > 0 && n.parentTextId) {
+      // 找源节点
+      const src = S.nodes.find(nd => nd.state === 'infected' && nd.text && S.activeTexts.some(t => t.originId === n.parentTextId && t.originNode.id === nd.id));
+      if (src && src.circle !== n.circle) aCross++;
+    }
+  });
+  S_B.nodes.forEach(n => {
+    if (n.state === 'infected' && n.receiveStep > 0 && n.parentTextId) {
+      const src = S_B.nodes.find(nd => nd.state === 'infected' && nd.text && S_B.activeTexts.some(t => t.originId === n.parentTextId && t.originNode.id === nd.id));
+      if (src && src.circle !== n.circle) bCross++;
+    }
+  });
+  document.getElementById('cs-a-inf').textContent = aInf;
+  document.getElementById('cs-b-inf').textContent = bInf;
+  document.getElementById('cs-a-txt').textContent = aTxt;
+  document.getElementById('cs-b-txt').textContent = bTxt;
+  document.getElementById('cs-a-cross').textContent = aCross;
+  document.getElementById('cs-b-cross').textContent = bCross;
+}
+
+// 对比模式主循环
+async function compareLoop() {
+  while (compareRunning && compareStep < S.params.maxSteps) {
+    compareStep++;
+    document.getElementById('s-step').textContent = compareStep;
+    // A跑一步
+    S.running = true;
+    const contA = await runOneStep();
+    // B跑一步
+    const contB = await runBStep();
+    // 更新对比状态
+    updateCompareStatus();
+    updateBNetBadge();
+    if (!contA && !contB) break;
+    await sleep(400);
+  }
+  compareRunning = false;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStart').textContent = '▶ 重新开始';
+  document.getElementById('btnStep').disabled = true;
+}
+
+// 启动对比模拟
+function startCompareSim() {
+  if (compareRunning) return;
+  // 重置A组
+  resetSim(false);
+  // 重置B组
+  S_B.timeStep = 0; S_B.apiCalls = 0; S_B.activeTexts = []; S_B.auditRound = [];
+  S_B.arrows = []; S_B.mutations = []; S_B.nodes.forEach(n => { n.state = 'inactive'; n.text = null; n.stimulus = 0; n.pulse = 0; n.receiveStep = -1; });
+  S_B.edges = JSON.parse(JSON.stringify(S.edges)); // 重置边为初始状态
+  computeBNetMetrics();
+  document.getElementById('auditListB').innerHTML = '<div class="empty">点击「开始」后<br>实时展示每轮 R_alg 算法推送的完整计算过程</div>';
+  document.getElementById('thresholdListB').innerHTML = '<div class="empty">尚无节点激活</div>';
+  document.getElementById('mutationListB').innerHTML = '<div class="empty">尚无文本变异</div>';
+  document.getElementById('logListB').innerHTML = '<div class="empty">尚无记录</div>';
+  document.getElementById('ms-countB').textContent = '0';
+  initBMutationStats();
+
+  // 设置种子节点（A）
+  const seedA = S.nodes[0];
+  seedA.state = 'infected'; seedA.text = S.params.seedText;
+  seedA.receiveStep = 0; seedA.pulse = 1;
+  S.activeTexts = [{ text:S.params.seedText, style:{...seedA.sig}, originCircle:seedA.circle, originNode:seedA, originId:'seed', step:0, heat:1.0 }];
+  addLog(seedA, S.params.seedText, true);
+
+  // 设置种子节点（B）- 同一节点
+  const seedB = S_B.nodes[0];
+  seedB.state = 'infected'; seedB.text = S.params.seedText;
+  seedB.receiveStep = 0; seedB.pulse = 1;
+  S_B.activeTexts = [{ text:S.params.seedText, style:{...seedB.sig}, originCircle:seedB.circle, originNode:seedB, originId:'seed', step:0, heat:1.0 }];
+  addBLog(seedB, S.params.seedText, true);
+
+  compareStep = 0;
+  updateStatus(); updateThresholdPanel(); updateMutationStats(); draw(); animate();
+  updateBThresholdPanel(); updateBMutationStats(); drawB(); animateB();
+  updateCompareStatus();
+  updateBNetBadge();
+
+  compareRunning = true;
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnStart').textContent = '传播中...';
+  document.getElementById('btnStep').disabled = false;
+  compareLoop();
+}
+
+// 退出对比模式清理
+function exitCompareMode() {
+  compareRunning = false;
+  document.getElementById('simPage').classList.remove('compare-mode');
+  document.getElementById('canvasWrapB').style.display = 'none';
+  document.getElementById('panelB1').style.display = 'none';
+  document.getElementById('panelB2').style.display = 'none';
+  document.getElementById('compareSummary').style.display = 'none';
+  document.getElementById('compareStatus').style.display = 'none';
+  document.getElementById('canvasALabel').style.display = 'none';
+  // 恢复原始消融设置
+  if (savedAblations) {
+    activeAblations.clear();
+    savedAblations.forEach(a => activeAblations.add(a));
+    savedAblations = null;
+  }
+  S_B = null;
+}
+
+/* ============================================================
  *  事件
  * ============================================================ */
-document.getElementById('btnStart').addEventListener('click', startSimulation);
-document.getElementById('btnStep').addEventListener('click', async () => { if (S.running) await runOneStep(); });
-document.getElementById('btnReset').addEventListener('click', () => resetSim(true));
+document.getElementById('btnStart').addEventListener('click', () => {
+  if (compareMode && S_B) {
+    startCompareSim();
+  } else {
+    startSimulation();
+  }
+});
+document.getElementById('btnStep').addEventListener('click', async () => {
+  if (compareMode && S_B && compareRunning) {
+    compareStep++;
+    document.getElementById('s-step').textContent = compareStep;
+    await runOneStep();
+    await runBStep();
+    updateCompareStatus();
+    updateBNetBadge();
+  } else if (S.running) {
+    await runOneStep();
+  }
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  if (compareMode && S_B) {
+    startCompareSim();
+  } else {
+    resetSim(true);
+  }
+});
 document.getElementById('btnBack').addEventListener('click', () => {
+  if (compareMode) {
+    exitCompareMode();
+    compareMode = false;
+    document.getElementById('compareToggle').classList.remove('on');
+    document.getElementById('abGroups').classList.remove('visible');
+  }
   document.getElementById('simPage').classList.remove('visible');
   document.getElementById('setupPage').classList.remove('setup-hidden');
 });
