@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMSI · 文本主体传播模拟</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+body{background:#f1f5f9;color:#0f172a;overflow:hidden}
+
+/* ==================== 配置页 ==================== */
+#setupPage{position:fixed;inset:0;background:linear-gradient(135deg,#e0e7ff 0%,#f0fdf4 50%,#fef3c7 100%);display:flex;align-items:center;justify-content:center;z-index:100;overflow-y:auto;padding:20px}
+.setup-card{background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.12);max-width:780px;width:90%;padding:36px 40px;max-height:92vh;overflow-y:auto}
+.setup-card h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.setup-card .subtitle{font-size:13px;color:#64748b;margin-bottom:24px}
+.setup-section{margin-bottom:22px}
+.setup-section h3{font-size:12px;color:#64748b;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;border-bottom:1px solid #e2e8f0;padding-bottom:6px}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.preset-btn{padding:8px 14px;border:2px solid #e2e8f0;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:12px;color:#475569;transition:.15s;font-family:inherit}
+.preset-btn:hover{border-color:#3b82f6;color:#3b82f6}
+.preset-btn.active{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
+.form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;font-size:13px;color:#334155}
+.form-row label{flex:0 0 auto;margin-right:12px}
+.form-row input[type=range]{flex:1;margin:0 10px;accent-color:#3b82f6;height:4px}
+.form-row input[type=number],.form-row select{background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px;width:70px;font-family:inherit}
+.form-row input[type=text],.form-row textarea{background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font-size:13px;width:100%;font-family:inherit}
+.form-row .val{color:#3b82f6;font-weight:600;font-size:12px;width:36px;text-align:right;font-family:monospace}
+.strategy-row{display:flex;gap:8px;margin-bottom:8px}
+.strategy-opt{flex:1;padding:10px 8px;border:2px solid #e2e8f0;background:#f8fafc;border-radius:8px;cursor:pointer;text-align:center;font-size:11px;color:#475569;transition:.15s;font-family:inherit;line-height:1.5}
+.strategy-opt:hover{border-color:#3b82f6}
+.strategy-opt.active{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
+.ablation-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ablation-chip{padding:5px 10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:6px;font-size:10.5px;color:#475569;cursor:pointer;transition:.15s;font-family:inherit}
+.ablation-chip:hover{border-color:#ef4444;color:#ef4444}
+.ablation-chip.active{border-color:#ef4444;background:#fef2f2;color:#dc2626}
+.btn-launch{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
+.btn-launch:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.3)}
+.setup-hidden{display:none!important}
+
+/* ==================== 模拟主界面 ==================== */
+#simPage{display:none;height:100vh}
+#simPage.visible{display:grid;grid-template-columns:1fr 370px 370px;grid-template-rows:52px 1fr 32px;height:100vh;gap:1px;background:#cbd5e1}
+
+/* 顶栏 */
+header{grid-column:1/-1;background:#1e293b;padding:0 18px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:14px;font-weight:600;color:#e2e8f0;display:flex;align-items:baseline;gap:8px}
+header h1 span{color:#94a3b8;font-weight:400;font-size:11px}
+.controls{display:flex;gap:6px}
+button{background:#3b82f6;color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:11px;transition:.15s;font-family:inherit}
+button:hover{background:#2563eb}
+button:disabled{background:#475569;cursor:not-allowed;opacity:.5}
+button.sec{background:#475569}
+button.sec:hover{background:#64748b}
+button.green{background:#059669}
+button.green:hover{background:#047857}
+
+/* 网络画布 */
+#canvasWrap{position:relative;background:#f8fafc;overflow:hidden}
+#network{display:block;width:100%;height:100%}
+.hint{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);padding:9px 12px;border-radius:7px;font-size:10.5px;color:#64748b;max-width:260px;border:1px solid #e2e8f0;line-height:1.55;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.hint b{color:#0f172a}
+.legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.92);padding:9px 12px;border-radius:7px;font-size:10px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.legend-title{color:#64748b;font-size:9px;margin-bottom:5px;letter-spacing:.05em}
+.legend-item{display:flex;align-items:center;gap:7px;margin-bottom:3px;color:#334155}
+.legend-item:last-child{margin-bottom:0}
+.dot{width:9px;height:9px;border-radius:50%}
+.overlay-badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.92);padding:8px 12px;border-radius:7px;font-size:10px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.overlay-badge .row{display:flex;justify-content:space-between;gap:12px;margin-bottom:3px}
+.overlay-badge .row:last-child{margin-bottom:0}
+.overlay-badge .lbl{color:#64748b}
+.overlay-badge .v{color:#0f172a;font-weight:600;font-family:monospace}
+
+/* 面板 */
+.panel{background:#1e293b;display:flex;flex-direction:column;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid #334155;flex-shrink:0}
+.tab{padding:9px 11px;font-size:11px;cursor:pointer;color:#94a3b8;border-bottom:2px solid transparent;transition:.15s;user-select:none;white-space:nowrap;flex-shrink:0}
+.tab.active{color:#60a5fa;border-bottom-color:#3b82f6;background:#0f172a}
+.tab:hover{color:#e2e8f0}
+.pane{flex:1;overflow-y:auto;padding:12px;display:none}
+.pane.active{display:block}
+.pane::-webkit-scrollbar{width:5px}
+.pane::-webkit-scrollbar-thumb{background:#475569;border-radius:3px}
+
+/* 算法审计 */
+.audit-step{border-left:2px solid #3b82f6;padding:8px 10px;margin-bottom:10px;background:#0f172a;border-radius:0 5px 5px 0;font-size:11px}
+.audit-step .step-title{color:#60a5fa;font-weight:600;margin-bottom:6px;font-size:11px}
+.audit-node{padding:5px 0;border-bottom:1px solid #1e293b;font-size:10.5px;line-height:1.65}
+.audit-node:last-child{border-bottom:none}
+.audit-node .name{color:#e2e8f0;font-weight:600;margin-right:6px}
+.audit-node .formula{color:#94a3b8;font-family:"SF Mono",Menlo,monospace;font-size:10px;display:block;margin:3px 0;padding-left:10px;border-left:1px solid #334155}
+.audit-node .formula b{color:#fbbf24;font-weight:600}
+.audit-node .formula .dim{color:#64748b}
+.audit-node .verdict{color:#94a3b8;font-size:10px;margin-top:2px}
+.audit-node .verdict.pass{color:#34d399}
+.audit-node .verdict.accum{color:#fbbf24}
+.audit-node .bar{height:3px;background:#1e293b;border-radius:2px;margin-top:4px;overflow:hidden}
+.audit-node .bar-inner{height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);transition:width .3s}
+
+/* 阈值状态 */
+.node-row{display:flex;align-items:center;padding:5px 8px;border-bottom:1px solid #1e293b;font-size:11px;gap:6px}
+.node-row .id{width:30px;color:#60a5fa;font-weight:600;font-size:10px}
+.node-row .circle-tag{font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.node-row .thr{flex:1}
+.node-row .thr-bar{height:5px;background:#1e293b;border-radius:3px;overflow:hidden}
+.node-row .thr-fill{height:100%;background:#3b82f6;transition:width .3s}
+.node-row .thr-fill.over{background:#fbbf24}
+.node-row .thr-fill.done{background:#10b981}
+.node-row .vals{color:#94a3b8;font-size:9.5px;font-family:monospace;flex-shrink:0}
+
+/* 变异轨迹 */
+.mutation-entry{background:#0f172a;border-radius:5px;padding:8px 10px;margin-bottom:8px;border-left:3px solid #8b5cf6;font-size:11px;line-height:1.55}
+.mutation-entry .meta{font-size:9.5px;color:#64748b;margin-bottom:4px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.mutation-entry .vec{display:flex;gap:3px;margin:5px 0;flex-wrap:wrap}
+.mutation-entry .dim-tag{font-size:9px;padding:1px 4px;border-radius:3px;font-family:monospace}
+.mutation-entry .from-text{color:#94a3b8;font-size:10px;border-left:2px solid #334155;padding-left:6px;margin:4px 0}
+.mutation-entry .to-text{color:#e2e8f0;font-size:10px;border-left:2px solid #8b5cf6;padding-left:6px;margin:4px 0}
+
+/* 网络指标 */
+.metric-card{background:#0f172a;border-radius:5px;padding:8px 10px;margin-bottom:7px;font-size:11px;line-height:1.65}
+.metric-card .mt{color:#60a5fa;font-weight:600;font-size:10px;margin-bottom:3px}
+.metric-card .mv{color:#e2e8f0;font-family:monospace;font-size:10px}
+.metric-card .mv span{color:#94a3b8}
+
+/* 人工节点 */
+.human-card{background:#0f172a;border-radius:7px;padding:12px;border-left:3px solid #a855f7;margin-bottom:10px}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.human-card{animation:slideIn .3s}
+.human-card .label{font-size:9.5px;color:#a855f7;letter-spacing:.05em;margin-bottom:5px;text-transform:uppercase}
+.human-card .text{font-size:12px;line-height:1.6;color:#e2e8f0;margin-bottom:9px}
+.human-card .meta{font-size:10px;color:#64748b;margin-bottom:9px;line-height:1.55;font-family:monospace}
+.human-actions{display:flex;gap:6px;flex-wrap:wrap}
+.human-actions button{flex:1;font-size:11px;padding:7px 8px;min-width:60px}
+.human-rewrite{width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:5px;padding:8px;font-size:11.5px;font-family:inherit;resize:vertical;min-height:64px;margin-bottom:8px;line-height:1.55}
+.human-rewrite:focus{outline:none;border-color:#3b82f6}
+.human-form-row{margin-bottom:8px}
+.human-form-row label{display:block;font-size:10px;color:#94a3b8;margin-bottom:3px}
+.human-form-row input,.human-form-row select,.human-form-row textarea{width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:5px;padding:6px 8px;font-size:12px;font-family:inherit}
+.human-form-row input:focus,.human-form-row select:focus,.human-form-row textarea:focus{outline:none;border-color:#3b82f6}
+.survey-q{margin-bottom:10px}
+.survey-q .q-text{font-size:11px;color:#e2e8f0;margin-bottom:5px}
+.survey-q .q-text b{color:#60a5fa}
+.survey-options{display:flex;flex-wrap:wrap;gap:5px}
+.survey-opt{padding:5px 9px;border:1px solid #334155;background:#0f172a;color:#94a3b8;border-radius:5px;font-size:10px;cursor:pointer;transition:.15s;font-family:inherit}
+.survey-opt:hover{border-color:#a855f7;color:#a855f7}
+.survey-opt.active{border-color:#a855f7;background:#a855f722;color:#c084fc}
+.empty{color:#475569;text-align:center;padding:24px 16px;font-size:11px;line-height:1.6}
+
+/* 日志 */
+.log-entry{background:#0f172a;border-left:3px solid #3b82f6;padding:8px 10px;margin-bottom:7px;border-radius:0 5px 5px 0;font-size:11px;line-height:1.55;animation:slideIn .25s}
+.log-entry .meta{font-size:9.5px;color:#64748b;margin-bottom:4px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.log-entry .node-id{color:#60a5fa;font-weight:600}
+.log-entry .tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px}
+.log-entry .content{color:#cbd5e1}
+
+/* 状态栏 */
+.statusbar{grid-column:1/-1;background:#1e293b;padding:0 18px;display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:#94a3b8}
+.statusbar span b{color:#e2e8f0;font-weight:600;font-family:monospace}
+</style>
+</head>
+<body>
+
+<!-- ==================== 配置页 ==================== -->
+<div id="setupPage">
+<div class="setup-card">
+<h1>AMSI 文本主体传播模拟器</h1>
+<div class="subtitle">算法中介化社会影响 · 阈值感染 · 透明算法 · 六维意义变异追踪 · 生成式多智能体仿真</div>
+
+<div class="setup-section">
+<h3>传播话题</h3>
+<div class="preset-row" id="topicPresets"></div>
+<div class="form-row"><input type="text" id="seedText" placeholder="种子文本（文本感染源头）"></div>
+</div>
+
+<div class="setup-section">
+<h3>圈层布局</h3>
+<div class="preset-row" id="circlePresets"></div>
+</div>
+
+<div class="setup-section">
+<h3>推荐算法策略</h3>
+<div class="strategy-row" id="strategyRow"></div>
+</div>
+
+<div class="setup-section">
+<h3>消融实验（点击移除对应组件）</h3>
+<div class="ablation-list" id="ablationList"></div>
+</div>
+
+<div class="setup-section">
+<h3>文本生成节点部署</h3>
+<div class="form-row"><label>每圈层节点数</label><input type="range" id="p-nodesPerCircle" min="3" max="10" value="6"><span class="val" id="v-nodesPerCircle">6</span></div>
+<div class="form-row"><label>平均接收阈值 ε_B</label><input type="range" id="p-avgTheta" min="10" max="100" value="45"><span class="val" id="v-avgTheta">0.45</span></div>
+<div class="form-row"><label>阈值异质性</label><input type="range" id="p-thetaVar" min="0" max="50" value="15"><span class="val" id="v-thetaVar">0.15</span></div>
+</div>
+
+<div class="setup-section">
+<h3>AMSI 算法特征权重</h3>
+<div class="form-row"><label>w₁ 内容匹配 (语义互文)</label><input type="range" id="p-w1" min="0" max="100" value="35"><span class="val" id="v-w1">0.35</span></div>
+<div class="form-row"><label>w₂ 圈层互文 (圈层重叠度)</label><input type="range" id="p-w2" min="0" max="100" value="25"><span class="val" id="v-w2">0.25</span></div>
+<div class="form-row"><label>w₃ 朋友信号 (弱关系)</label><input type="range" id="p-wFriend" min="0" max="100" value="20"><span class="val" id="v-wFriend">0.20</span></div>
+<div class="form-row"><label>w₄ 文本热度</label><input type="range" id="p-wHeat" min="0" max="100" value="12"><span class="val" id="v-wHeat">0.12</span></div>
+<div class="form-row"><label>w₅ 时间衰减</label><input type="range" id="p-wRecency" min="0" max="100" value="8"><span class="val" id="v-wRecency">0.08</span></div>
+</div>
+
+<div class="setup-section">
+<h3>仿真控制</h3>
+<div class="form-row"><label>每轮 Top-K 推送</label><input type="range" id="p-topK" min="1" max="10" value="4"><span class="val" id="v-topK">4</span></div>
+<div class="form-row"><label>最大时间步</label><input type="range" id="p-maxSteps" min="3" max="15" value="8"><span class="val" id="v-maxSteps">8</span></div>
+<div class="form-row"><label>刺激衰减率</label><input type="range" id="p-decay" min="0" max="50" value="15"><span class="val" id="v-decay">0.15</span></div>
+</div>
+
+<div class="setup-section">
+<h3>LLM 改写引擎</h3>
+<div class="form-row"><label>启用 LLM</label><select id="p-useLLM"><option value="1">开（调 DeepSeek API）</option><option value="0">关（模板改写）</option></select></div>
+<div class="form-row"><label>API 上限</label><input type="number" id="p-maxCalls" value="30" min="0"></div>
+</div>
+
+<button class="btn-launch" id="btnLaunch">▶ 启动模拟</button>
+</div>
+</div>
+
+<!-- ==================== 模拟主界面 ==================== -->
+<div id="simPage">
+<header>
+<h1>AMSI 文本主体传播模拟 <span id="simSubtitle"></span></h1>
+<div class="controls">
+<button id="btnStart">▶ 开始</button>
+<button id="btnStep" class="sec" disabled>⏭ 单步</button>
+<button id="btnReset" class="sec">重置</button>
+<button id="btnBack" class="sec">← 配置</button>
+</div>
+</header>
+<div id="canvasWrap">
+<canvas id="network"></canvas>
+<div class="hint"><b>AMSI 两层机制</b><br>层1 算法互文匹配：R_alg = Σwᵢ·fᵢ → 推送候选文本<br>层2 文本接纳判定：累积刺激 ≥ ε_B → 触发文本感染（LLM改写）<br>六维风格签名驱动改写 · 弱关系朋友信号进入评分</div>
+<div class="legend">
+<div class="legend-title">文本生成节点状态</div>
+<div class="legend-item"><div class="dot" style="background:#94a3b8"></div>未激活</div>
+<div class="legend-item"><div class="dot" style="background:#fbbf24"></div>已激活（累积中）</div>
+<div class="legend-item"><div class="dot" style="background:#3b82f6"></div>已感染（已改写）</div>
+<div class="legend-item"><div class="dot" style="background:#a855f7"></div>前沿节点（人工）</div>
+<div class="legend-item"><div class="dot" style="background:#10b981"></div>互文边（转发）</div>
+<div class="legend-item"><div class="dot" style="background:#f59e0b"></div>互文边（评论）</div>
+</div>
+<div class="overlay-badge" id="netBadge"></div>
+</div>
+<aside class="panel">
+<div class="tabs">
+<div class="tab active" data-tab="audit">算法审计</div>
+<div class="tab" data-tab="threshold">阈值状态</div>
+<div class="tab" data-tab="mutation">意义变异</div>
+</div>
+<div class="pane active" id="pane-audit"><div id="auditList"><div class="empty">点击「开始」后<br>实时展示每轮 R_alg 算法推送的完整计算过程</div></div></div>
+<div class="pane" id="pane-threshold"><div id="thresholdList"><div class="empty">尚无节点激活</div></div></div>
+<div class="pane" id="pane-mutation"><div id="mutationList"><div class="empty">尚无文本变异<br>每次 LLM 改写后此处展示六维意义变异向量</div></div></div>
+</aside>
+<aside class="panel">
+<div class="tabs">
+<div class="tab active" data-tab="human">人工节点</div>
+<div class="tab" data-tab="log">文本感染日志</div>
+<div class="tab" data-tab="network">网络指标</div>
+</div>
+<div class="pane active" id="pane-human"><div id="humanFeed"><div class="empty">等待算法推送...<br>点击「开始」后算法推送到达你的节点时会暂停</div></div></div>
+<div class="pane" id="pane-log"><div id="logList"><div class="empty">尚无记录</div></div></div>
+<div class="pane" id="pane-network"><div id="netMetrics"><div class="empty">尚无网络数据</div></div></div>
+</aside>
+<div class="statusbar">
+<span>时间步 <b id="s-step">0</b></span>
+<span>已感染 <b id="s-infected">0</b>/<b id="s-total">0</b></span>
+<span>活跃文本 <b id="s-texts">0</b></span>
+<span>API <b id="s-calls">0</b></span>
+<span>策略 <b id="s-strategy">混合</b></span>
+</div>
+</div>
+
+<script>
+/* ============================================================
+ *  API 配置
+ * ============================================================ */
+const API_KEY = 'sk-27031cc4659c4f0791f3ff3e4e8f228e';
+const API_URL = 'https://api.deepseek.com/chat/completions';
+const MODEL = 'deepseek-chat';
+
+/* ============================================================
+ *  话题 & 圈层预设
+ * ============================================================ */
+const TOPICS = [
+  { name: 'AI 就业冲击', text: 'AI 技术正在快速取代传统岗位，2024 年就业市场面临严峻挑战。据预测，未来五年内，全球将有超过 3 亿个工作岗位受到自动化影响。' },
+  { name: '健康谣言', text: '最新研究发现，每天喝八杯水可以彻底清除体内毒素，多家权威机构已确认这一结论。' },
+  { name: '政策宣传', text: '国务院发布新一轮数字经济发展规划，重点支持人工智能、大数据等前沿技术产业化落地。' },
+  { name: '自定义', text: '' },
+];
+const CIRCLE_PRESETS = {
+  'AI 就业冲击': [
+    { name: '科技圈', color: '#3b82f6', cx: 0.20, cy: 0.55, r: 0.14 },
+    { name: '劳工圈', color: '#10b981', cx: 0.50, cy: 0.55, r: 0.14 },
+    { name: '政策圈', color: '#f59e0b', cx: 0.80, cy: 0.55, r: 0.14 },
+  ],
+  '健康谣言': [
+    { name: '养生圈', color: '#10b981', cx: 0.20, cy: 0.55, r: 0.14 },
+    { name: '医学圈', color: '#3b82f6', cx: 0.50, cy: 0.55, r: 0.14 },
+    { name: '大众圈', color: '#f59e0b', cx: 0.80, cy: 0.55, r: 0.14 },
+  ],
+  '政策宣传': [
+    { name: '政务圈', color: '#f59e0b', cx: 0.20, cy: 0.55, r: 0.14 },
+    { name: '产业圈', color: '#3b82f6', cx: 0.50, cy: 0.55, r: 0.14 },
+    { name: '公众圈', color: '#10b981', cx: 0.80, cy: 0.55, r: 0.14 },
+  ],
+  '自定义': [
+    { name: '圈层 A', color: '#3b82f6', cx: 0.20, cy: 0.55, r: 0.14 },
+    { name: '圈层 B', color: '#10b981', cx: 0.50, cy: 0.55, r: 0.14 },
+    { name: '圈层 C', color: '#f59e0b', cx: 0.80, cy: 0.55, r: 0.14 },
+  ],
+};
+
+/* ============================================================
+ *  六维风格签名
+ *  对应论文：语义印迹 / 框架印迹 / 立场印迹 / 情感印迹 / 风格印迹 / 行动指向印迹
+ * ============================================================ */
+const DIM_NAMES = ['语义', '框架', '立场', '情感', '风格', '行动指向'];
+const DIM_COLORS = ['#8b5cf6', '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#06b6d4'];
+
+// 六维风格签名的取值空间（简化版，每维离散取值）
+const STYLE_DIMS = {
+  semantic:   { name: '语义', values: ['事实陈述', '推测表达', '情感渲染'] },
+  frame:      { name: '框架', values: ['经济框架', '社会框架', '道德框架'] },
+  stance:     { name: '立场', values: ['支持', '中立', '质疑'] },
+  emotion:    { name: '情感', values: ['积极', '中性', '消极'] },
+  style:      { name: '风格', values: ['正式', '非正式', '网络化'] },
+  action:     { name: '行动指向', values: ['信息传递', '行动呼吁', '观点表达'] },
+};
+
+function randomSignature() {
+  const sig = {};
+  for (const k in STYLE_DIMS) {
+    const vals = STYLE_DIMS[k].values;
+    sig[k] = { value: vals[Math.floor(Math.random()*vals.length)], idx: Math.floor(Math.random()*vals.length), n: vals.length };
+  }
+  return sig;
+}
+
+function signatureDesc(sig) {
+  return `${sig.emotion.value}/${sig.stance.value}/${sig.style.value}`;
+}
+
+// 六维数值化向量 (0-1 浮点)
+function signatureVector(sig) {
+  return [
+    sig.semantic.idx / sig.semantic.n,
+    sig.frame.idx / sig.frame.n,
+    sig.stance.idx / sig.stance.n,
+    sig.emotion.idx / sig.emotion.n,
+    sig.style.idx / sig.style.n,
+    sig.action.idx / sig.action.n,
+  ];
+}
+
+// 计算两个风格签名的余弦相似度
+function cosSim(a, b) {
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i < a.length; i++) { dot += a[i]*b[i]; na += a[i]*a[i]; nb += b[i]*b[i]; }
+  if (na === 0 || nb === 0) return 0;
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
+}
+
+// 六维意义变异向量 = 目标签名向量 - 源签名向量（各维归一化差值）
+function mutationVector(srcSig, tgtSig) {
+  const sv = signatureVector(srcSig), tv = signatureVector(tgtSig);
+  const dims = ['semantic','frame','stance','emotion','style','action'];
+  const vec = {};
+  dims.forEach((d, i) => {
+    vec[d] = {
+      delta: tv[i] - sv[i],
+      from: srcSig[d].value,
+      to: tgtSig[d].value,
+      changed: srcSig[d].value !== tgtSig[d].value,
+    };
+  });
+  // 总变异量 = 欧氏距离
+  let dist = 0;
+  for (let i = 0; i < sv.length; i++) { dist += (tv[i]-sv[i])**2; }
+  vec._total = Math.sqrt(dist);
+  vec._cosSim = cosSim(sv, tv);
+  return vec;
+}
+
+// 文本级编辑距离 (Levenshtein ratio, 简化版字符级)
+function textSimilarity(a, b) {
+  if (!a || !b) return 0;
+  const la = a.length, lb = b.length;
+  if (la === 0 && lb === 0) return 1;
+  if (la === 0 || lb === 0) return 0;
+  const maxLen = Math.max(la, lb);
+  let common = 0;
+  const setA = new Set(a);
+  for (const ch of b) { if (setA.has(ch)) common++; }
+  return common / maxLen;
+}
+
+/* ============================================================
+ *  全局状态
+ * ============================================================ */
+let CIRCLES = [];
+let selectedTopic = 'AI 就业冲击';
+let selectedStrategy = 'mixed';
+let activeAblations = new Set();
+
+const STRATEGIES = [
+  { id: 'heat', name: '热度优先', desc: '仅基于文本热度+时间衰减', icon: '🔥' },
+  { id: 'interest', name: '兴趣匹配优先', desc: '仅基于内容-圈层风格匹配', icon: '🎯' },
+  { id: 'mixed', name: '混合策略（主实验）', desc: 'AMSI 完整五维评分', icon: '⚖️' },
+];
+
+const ABLATIONS = [
+  { id: 'noFriend', name: '移除朋友信号' },
+  { id: 'noThreshold', name: '移除阈值机制（直接感染）' },
+  { id: 'noDecay', name: '移除刺激衰减' },
+  { id: 'noLLM', name: '移除 LLM 改写（原样转发）' },
+];
+
+const S = {
+  nodes: [], activeTexts: [], timeStep: 0,
+  running: false, waitingHuman: false, apiCalls: 0,
+  params: {}, auditRound: [], humanHistory: [],
+  pendingHuman: null, arrows: [], mutations: [],
+  edges: [], // 互文网络边 {from, to, type: 'repost'|'comment'}
+};
+
+/* ============================================================
+ *  配置页逻辑
+ * ============================================================ */
+function initSetup() {
+  // 话题
+  const tp = document.getElementById('topicPresets');
+  TOPICS.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'preset-btn' + (p.name === selectedTopic ? ' active' : '');
+    b.textContent = p.name;
+    b.onclick = () => {
+      selectedTopic = p.name;
+      tp.querySelectorAll('.preset-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      CIRCLES = JSON.parse(JSON.stringify(CIRCLE_PRESETS[p.name]));
+      renderCirclePresets();
+      if (p.text) document.getElementById('seedText').value = p.text;
+    };
+    tp.appendChild(b);
+  });
+  CIRCLES = JSON.parse(JSON.stringify(CIRCLE_PRESETS[selectedTopic]));
+  document.getElementById('seedText').value = TOPICS[0].text;
+
+  // 圈层
+  renderCirclePresets();
+
+  // 策略
+  const sr = document.getElementById('strategyRow');
+  STRATEGIES.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'strategy-opt' + (s.id === selectedStrategy ? ' active' : '');
+    b.innerHTML = `${s.icon}<br><b>${s.name}</b><br>${s.desc}`;
+    b.onclick = () => {
+      selectedStrategy = s.id;
+      sr.querySelectorAll('.strategy-opt').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+    sr.appendChild(b);
+  });
+
+  // 消融
+  const al = document.getElementById('ablationList');
+  ABLATIONS.forEach(a => {
+    const b = document.createElement('button');
+    b.className = 'ablation-chip';
+    b.textContent = a.name;
+    b.onclick = () => {
+      if (activeAblations.has(a.id)) { activeAblations.delete(a.id); b.classList.remove('active'); }
+      else { activeAblations.add(a.id); b.classList.add('active'); }
+    };
+    al.appendChild(b);
+  });
+
+  // 滑块绑定
+  const bind = (id, vid, fn) => {
+    const el = document.getElementById(id), v = document.getElementById(vid);
+    const upd = () => { v.textContent = fn ? fn(parseFloat(el.value)) : el.value; };
+    el.addEventListener('input', upd); upd();
+  };
+  bind('p-avgTheta','v-avgTheta', v => (v/100).toFixed(2));
+  bind('p-thetaVar','v-thetaVar', v => (v/100).toFixed(2));
+  bind('p-w1','v-w1', v => (v/100).toFixed(2));
+  bind('p-w2','v-w2', v => (v/100).toFixed(2));
+  bind('p-wFriend','v-wFriend', v => (v/100).toFixed(2));
+  bind('p-wHeat','v-wHeat', v => (v/100).toFixed(2));
+  bind('p-wRecency','v-wRecency', v => (v/100).toFixed(2));
+  bind('p-topK','v-topK', null);
+  bind('p-maxSteps','v-maxSteps', null);
+  bind('p-decay','v-decay', v => (v/100).toFixed(2));
+  bind('p-nodesPerCircle','v-nodesPerCircle', null);
+
+  document.getElementById('btnLaunch').onclick = () => {
+    readParams();
+    document.getElementById('setupPage').classList.add('setup-hidden');
+    document.getElementById('simPage').classList.add('visible');
+    initSim();
+  };
+}
+
+function renderCirclePresets() {
+  const cp = document.getElementById('circlePresets');
+  cp.innerHTML = '';
+  CIRCLES.forEach((c) => {
+    const b = document.createElement('button');
+    b.className = 'preset-btn active';
+    b.style.borderColor = c.color;
+    b.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.color};margin-right:5px;vertical-align:middle"></span>${c.name}`;
+    b.onclick = () => {
+      const colors = ['#3b82f6','#10b981','#f59e0b','#a855f7','#ef4444','#06b6d4'];
+      c.color = colors[(colors.indexOf(c.color)+1) % colors.length];
+      renderCirclePresets();
+    };
+    cp.appendChild(b);
+  });
+}
+
+function readParams() {
+  S.params = {
+    nodesPerCircle: +document.getElementById('p-nodesPerCircle').value,
+    avgTheta: +document.getElementById('p-avgTheta').value / 100,
+    thetaVar: +document.getElementById('p-thetaVar').value / 100,
+    w1: +document.getElementById('p-w1').value / 100,
+    w2: +document.getElementById('p-w2').value / 100,
+    wFriend: +document.getElementById('p-wFriend').value / 100,
+    wHeat: +document.getElementById('p-wHeat').value / 100,
+    wRecency: +document.getElementById('p-wRecency').value / 100,
+    topK: +document.getElementById('p-topK').value,
+    maxSteps: +document.getElementById('p-maxSteps').value,
+    decay: +document.getElementById('p-decay').value / 100,
+    useLLM: document.getElementById('p-useLLM').value === '1',
+    maxCalls: +document.getElementById('p-maxCalls').value,
+    seedText: document.getElementById('seedText').value || 'AI 技术正在快速取代传统岗位。',
+    strategy: selectedStrategy,
+    ablations: [...activeAblations],
+  };
+}
+
+/* ============================================================
+ *  Canvas
+ * ============================================================ */
+const cv = document.getElementById('network');
+const ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+
+function resize() {
+  const r = cv.parentElement.getBoundingClientRect();
+  DPR = window.devicePixelRatio || 1;
+  W = r.width; H = r.height;
+  cv.width = W * DPR; cv.height = H * DPR;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+/* ============================================================
+ *  圈层重合度 O_AB
+ * ============================================================ */
+function computeCircleOverlap() {
+  // 基于圈层间互文边数 / 总边数 的简化重合度
+  const N = CIRCLES.length;
+  const matrix = Array(N).fill(0).map(() => Array(N).fill(0));
+  for (const e of S.edges) {
+    if (e.fromCircle !== e.toCircle) {
+      matrix[e.fromCircle][e.toCircle]++;
+      matrix[e.toCircle][e.fromCircle]++;
+    }
+  }
+  const total = S.edges.length || 1;
+  return matrix.map(row => row.map(v => v / total));
+}
+
+/* ============================================================
+ *  构建网络
+ * ============================================================ */
+function randInt(n) { return Math.floor(Math.random() * n); }
+
+function buildNodes() {
+  S.nodes = []; S.edges = [];
+  const N = S.params.nodesPerCircle;
+  for (let c = 0; c < CIRCLES.length; c++) {
+    for (let i = 0; i < N; i++) {
+      const ang = (i / N) * Math.PI * 2 - Math.PI / 2;
+      const jitter = 0.75 + Math.random() * 0.4;
+      const theta = Math.max(0.1, Math.min(0.95, S.params.avgTheta + (Math.random()-0.5)*2*S.params.thetaVar));
+      S.nodes.push({
+        id: S.nodes.length, circle: c,
+        x: CIRCLES[c].cx + Math.cos(ang) * CIRCLES[c].r * jitter,
+        y: CIRCLES[c].cy + Math.sin(ang) * CIRCLES[c].r * jitter * 1.5,
+        state: 'inactive', // inactive / active / infected
+        sig: randomSignature(),
+        theta, stimulus: 0, text: null,
+        parentTextId: null, receiveStep: -1,
+        pulse: 0, isHuman: false, friends: [],
+      });
+    }
+  }
+  // 人工节点
+  const hn = {
+    id: S.nodes.length, circle: 0, x: 0.5, y: 0.08,
+    state: 'inactive',
+    sig: { semantic:{value:'事实陈述',idx:0,n:3}, frame:{value:'社会框架',idx:1,n:3}, stance:{value:'中立',idx:1,n:3}, emotion:{value:'中性',idx:1,n:3}, style:{value:'非正式',idx:1,n:3}, action:{value:'信息传递',idx:0,n:3} },
+    theta: S.params.avgTheta, stimulus: 0, text: null,
+    parentTextId: null, receiveStep: -1,
+    pulse: 0, isHuman: true, friends: [],
+    profile: null, // 人工节点个人信息
+  };
+  S.nodes.push(hn); S.humanNode = hn;
+
+  // 互文网络边（转发/评论）
+  for (let c = 0; c < CIRCLES.length; c++) {
+    const grp = S.nodes.filter(n => n.circle === c && !n.isHuman);
+    for (let i = 0; i < grp.length; i++) {
+      const next = (i+1) % grp.length;
+      S.edges.push({ from: grp[i].id, to: grp[next].id, type: 'repost', fromCircle: c, toCircle: c });
+      if (Math.random() > 0.5) {
+        const skip = (i+2) % grp.length;
+        S.edges.push({ from: grp[i].id, to: grp[skip].id, type: 'comment', fromCircle: c, toCircle: c });
+      }
+    }
+  }
+  // 跨圈桥接边
+  const pairs = [[0,1],[1,2],[0,2]];
+  for (const [a,b] of pairs) {
+    for (let i = 0; i < 2; i++) {
+      const na = S.nodes.filter(n => n.circle === a && !n.isHuman)[randInt(N)];
+      const nb = S.nodes.filter(n => n.circle === b && !n.isHuman)[randInt(N)];
+      S.edges.push({ from: na.id, to: nb.id, type: Math.random()>0.5?'repost':'comment', fromCircle: a, toCircle: b });
+    }
+  }
+  // 去重
+  const seen = new Set();
+  S.edges = S.edges.filter(e => {
+    const k = `${Math.min(e.from,e.to)}-${Math.max(e.from,e.to)}`;
+    if (seen.has(k)) return false; seen.add(k); return true;
+  });
+
+  // 弱关系朋友
+  for (let c = 0; c < CIRCLES.length; c++) {
+    const grp = S.nodes.filter(n => n.circle === c && !n.isHuman);
+    grp.forEach(n => {
+      const others = grp.filter(x => x.id !== n.id);
+      const k = 2 + randInt(2);
+      const sh = [...others].sort(() => Math.random()-0.5);
+      n.friends = sh.slice(0,k).map(x => x.id);
+    });
+  }
+  const tech = S.nodes.filter(n => n.circle === 0 && !n.isHuman);
+  hn.friends = tech.slice(0,2).map(n => n.id);
+
+  document.getElementById('s-total').textContent = S.nodes.length;
+  computeNetMetrics();
+}
+
+/* ============================================================
+ *  网络指标
+ * ============================================================ */
+function computeNetMetrics() {
+  const N = S.nodes.length;
+  const degree = Array(N).fill(0);
+  for (const e of S.edges) { degree[e.from]++; degree[e.to]++; }
+  const avgDeg = degree.reduce((a,b)=>a+b,0) / N;
+  const maxDeg = Math.max(...degree);
+  // 聚类系数（简化）
+  const adj = Array(N).fill(0).map(()=>new Set());
+  for (const e of S.edges) { adj[e.from].add(e.to); adj[e.to].add(e.from); }
+  let clustSum = 0, clustCount = 0;
+  for (let i = 0; i < N; i++) {
+    const nbrs = [...adj[i]];
+    if (nbrs.length < 2) continue;
+    let links = 0;
+    for (let j = 0; j < nbrs.length; j++)
+      for (let k = j+1; k < nbrs.length; k++)
+        if (adj[nbrs[j]].has(nbrs[k])) links++;
+    clustSum += 2*links / (nbrs.length*(nbrs.length-1));
+    clustCount++;
+  }
+  const avgClust = clustCount > 0 ? clustSum/clustCount : 0;
+  // 模体度（简化：三角形计数）
+  let motifs = 0;
+  for (let i = 0; i < N; i++)
+    for (const j of adj[i])
+      if (j > i)
+        for (const k of adj[j])
+          if (k > j && adj[i].has(k)) motifs++;
+  // 圈层重合度矩阵
+  const overlap = computeCircleOverlap();
+
+  S.netMetrics = { avgDeg, maxDeg, avgClust, motifs, overlap, degree };
+  renderNetMetrics();
+}
+
+function renderNetMetrics() {
+  if (!S.netMetrics) return;
+  const m = S.netMetrics;
+  const el = document.getElementById('netMetrics');
+  let html = '';
+  html += `<div class="metric-card"><div class="mt">网络规模</div><div class="mv">节点数 <span>${S.nodes.length}</span> · 边数 <span>${S.edges.length}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">度分布</div><div class="mv">平均度 <span>${m.avgDeg.toFixed(2)}</span> · 最大度 <span>${m.maxDeg}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">聚类系数</div><div class="mv"><span>${m.avgClust.toFixed(4)}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">模体度（三角形计数）</div><div class="mv"><span>${m.motifs}</span></div></div>`;
+  html += `<div class="metric-card"><div class="mt">圈层重合度矩阵 O_AB</div>`;
+  for (let i = 0; i < CIRCLES.length; i++) {
+    let row = '';
+    for (let j = 0; j < CIRCLES.length; j++) {
+      const v = m.overlap[i][j];
+      row += `<span style="display:inline-block;width:52px;color:${i===j?'#64748b':v>0.1?'#fbbf24':'#94a3b8'}">${i===j?'—':v.toFixed(3)}</span>`;
+    }
+    html += `<div class="mv">${row}</div>`;
+  }
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+/* ============================================================
+ *  绘制
+ * ============================================================ */
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // 圈层背景
+  CIRCLES.forEach(c => {
+    ctx.beginPath();
+    ctx.arc(c.cx * W, c.cy * H, c.r * H, 0, Math.PI*2);
+    ctx.fillStyle = c.color + '10'; ctx.fill();
+    ctx.strokeStyle = c.color + '40'; ctx.lineWidth = 1.5;
+    ctx.setLineDash([6,6]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = c.color + 'cc';
+    ctx.font = '600 11px -apple-system,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(c.name, c.cx * W, (c.cy - c.r - 0.025) * H);
+  });
+
+  // 圈层重合度标注（画在圈层对之间）
+  if (S.netMetrics) {
+    const pairs = [[0,1],[1,2],[0,2]];
+    for (const [a,b] of pairs) {
+      const ca = CIRCLES[a], cb = CIRCLES[b];
+      const mx = (ca.cx + cb.cx) / 2 * W;
+      const my = (ca.cy + cb.cy) / 2 * H;
+      const v = S.netMetrics.overlap[a][b];
+      ctx.fillStyle = v > 0.1 ? '#f59e0b' : '#94a3b8';
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`O=${v.toFixed(3)}`, mx, my);
+    }
+  }
+
+  // 互文网络边（有向，标注类型）
+  for (const e of S.edges) {
+    const s = S.nodes[e.from], t = S.nodes[e.to];
+    if (!s || !t) continue;
+    const sx = s.x * W, sy = s.y * H, tx = t.x * W, ty = t.y * H;
+    // 边色
+    const edgeColor = e.type === 'repost' ? 'rgba(16,185,129,0.18)' : 'rgba(245,158,11,0.18)';
+    ctx.strokeStyle = edgeColor;
+    ctx.lineWidth = e.fromCircle !== e.toCircle ? 1.5 : 1;
+    if (e.fromCircle !== e.toCircle) { ctx.setLineDash([4,3]); } else { ctx.setLineDash([]); }
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(tx, ty); ctx.stroke();
+    ctx.setLineDash([]);
+    // 箭头
+    const ang = Math.atan2(ty-sy, tx-sx);
+    const arrLen = 5;
+    ctx.beginPath();
+    ctx.moveTo(tx - Math.cos(ang)*14, ty - Math.sin(ang)*14);
+    ctx.lineTo(tx - Math.cos(ang-0.4)*14 - Math.cos(ang)*arrLen, ty - Math.sin(ang-0.4)*14 - Math.sin(ang)*arrLen);
+    ctx.moveTo(tx - Math.cos(ang)*14, ty - Math.sin(ang)*14);
+    ctx.lineTo(tx - Math.cos(ang+0.4)*14 - Math.cos(ang)*arrLen, ty - Math.sin(ang+0.4)*14 - Math.sin(ang)*arrLen);
+    ctx.strokeStyle = edgeColor.replace('0.18','0.4');
+    ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  // 弱关系
+  ctx.strokeStyle = 'rgba(139,92,246,0.12)'; ctx.lineWidth = 1; ctx.setLineDash([2,3]);
+  S.nodes.forEach(n => n.friends.forEach(fid => {
+    const f = S.nodes[fid]; if (!f || fid <= n.id) return;
+    ctx.beginPath(); ctx.moveTo(n.x*W, n.y*H); ctx.lineTo(f.x*W, f.y*H); ctx.stroke();
+  }));
+  ctx.setLineDash([]);
+
+  // 推送箭头动画
+  S.arrows.forEach(a => {
+    const src = S.nodes[a.fromId], tgt = S.nodes[a.toId];
+    const mx = (src.x+tgt.x)/2, my = Math.min(src.y,tgt.y)-0.04;
+    const bcx = (1-a.t)*(1-a.t)*src.x + 2*(1-a.t)*a.t*mx + a.t*a.t*tgt.x;
+    const bcy = (1-a.t)*(1-a.t)*src.y + 2*(1-a.t)*a.t*my + a.t*a.t*tgt.y;
+    ctx.beginPath(); ctx.moveTo(src.x*W, src.y*H);
+    ctx.quadraticCurveTo(mx*W, my*H, bcx*W, bcy*H);
+    ctx.strokeStyle = a.color; ctx.lineWidth = 2;
+    ctx.globalAlpha = (1-a.t)*0.85; ctx.stroke(); ctx.globalAlpha = 1;
+  });
+
+  // 节点
+  S.nodes.forEach(n => {
+    const x = n.x*W, y = n.y*H;
+    const baseR = n.isHuman ? 17 : 13;
+    if (n.pulse > 0) {
+      ctx.beginPath(); ctx.arc(x, y, baseR+13*n.pulse, 0, Math.PI*2);
+      const c = n.isHuman ? '168,85,247' : '251,191,36';
+      ctx.fillStyle = `rgba(${c},${n.pulse*0.35})`; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(x, y, baseR, 0, Math.PI*2);
+    if (n.isHuman) ctx.fillStyle = '#a855f7';
+    else if (n.state === 'infected') ctx.fillStyle = CIRCLES[n.circle].color;
+    else if (n.state === 'active') ctx.fillStyle = '#fbbf24';
+    else ctx.fillStyle = '#94a3b8';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 10px -apple-system,sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(n.isHuman ? '👤' : (n.id+1), x, y);
+    // 累积进度环
+    if (n.state === 'active' && n.stimulus > 0.05) {
+      const ratio = Math.min(1, n.stimulus / n.theta);
+      ctx.beginPath();
+      ctx.arc(x, y, baseR+3, -Math.PI/2, -Math.PI/2 + ratio*Math.PI*2);
+      ctx.strokeStyle = ratio>0.7 ? '#fbbf24' : '#94a3b8';
+      ctx.lineWidth = 2.5; ctx.stroke();
+    }
+  });
+}
+
+function animate() {
+  let need = false;
+  S.arrows.forEach(a => { a.t += 0.045; if (a.t < 1) need = true; });
+  S.arrows = S.arrows.filter(a => a.t < 1);
+  S.nodes.forEach(n => { if (n.pulse > 0) { n.pulse = Math.max(0, n.pulse-0.05); need = true; } });
+  if (need) { draw(); requestAnimationFrame(animate); }
+}
+
+/* ============================================================
+ *  AMSI 算法推荐
+ * ============================================================ */
+function styleSim(textSig, nodeSig) {
+  // 六维签名余弦相似度
+  return Math.max(0, cosSim(signatureVector(textSig), signatureVector(nodeSig)));
+}
+function circleOverlap(to, nc) {
+  if (to === nc) return 1;
+  const d = Math.abs(to - nc);
+  return d === 1 ? 0.35 : 0.15;
+}
+function friendSignal(text, node) {
+  if (activeAblations.has('noFriend') || !node.friends.length) return 0;
+  let c = 0;
+  node.friends.forEach(fid => {
+    const f = S.nodes[fid]; if (!f) return;
+    if (f.state === 'infected' && f.text === text.text) c++;
+    else if (f.state === 'infected' && f.text && text.originId && f.parentTextId === text.originId) c++;
+  });
+  return c / Math.max(1, node.friends.length);
+}
+
+function computeRalg(text, node) {
+  const p = S.params;
+  const sim = styleSim(text.style, node.sig);
+  const overlap = circleOverlap(text.originCircle, node.circle);
+  const fSig = friendSignal(text, node);
+  const heat = text.heat;
+  const recency = Math.max(0, 1 - (S.timeStep - text.step) * 0.15);
+
+  // 策略选择
+  let contrib;
+  if (p.strategy === 'heat') {
+    contrib = { sim:0, overlap:0, friend:0, heat:p.wHeat*heat, recency:p.wRecency*recency };
+  } else if (p.strategy === 'interest') {
+    contrib = { sim:p.w1*sim, overlap:p.w2*overlap, friend:0, heat:0, recency:0 };
+  } else {
+    contrib = { sim:p.w1*sim, overlap:p.w2*overlap, friend:p.wFriend*fSig, heat:p.wHeat*heat, recency:p.wRecency*recency };
+  }
+  return { total: Object.values(contrib).reduce((a,b)=>a+b,0), contrib, raw:{sim,overlap,fSig,heat,recency} };
+}
+
+/* ============================================================
+ *  LLM 改写
+ * ============================================================ */
+async function generateText(srcText, node) {
+  if (activeAblations.has('noLLM')) return srcText; // 消融：原样转发
+  if (!S.params.useLLM || S.apiCalls >= S.params.maxCalls) return templateRewrite(srcText, node);
+  S.apiCalls++; updateStatus();
+  const sig = node.sig;
+  const desc = `语义倾向：${sig.semantic.value}；框架：${sig.frame.value}；立场：${sig.stance.value}；情感：${sig.emotion.value}；语言风格：${sig.style.value}；行动指向：${sig.action.value}`;
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${API_KEY}` },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role:'system', content:`你是一个文本生成节点，你的六维风格签名为【${desc}】。请将用户提供的文本改写为符合你风格签名的版本：保留不可变要素（事实主张、情感极性、信源标记），调整可变要素（词汇选择、句式长度、语气强度、表达框架）。直接输出改写后的文本，60字以内，不要任何前缀解释。` },
+          { role:'user', content: srcText }
+        ],
+        temperature: 0.7, top_p: 0.9, max_tokens: 150
+      })
+    });
+    if (!resp.ok) throw new Error('HTTP '+resp.status);
+    const d = await resp.json();
+    return (d.choices[0].message.content || '').trim();
+  } catch(e) {
+    console.warn('LLM 失败，回退:', e.message);
+    return templateRewrite(srcText, node);
+  }
+}
+function templateRewrite(text, node) {
+  const sig = node.sig;
+  const prefixes = { '积极':['好消息！','值得关注，'], '中性':['','据报道，'], '消极':['令人担忧，','警惕！'] };
+  const sufs = { '支持':'——应积极应对。','中立':'——值得持续观察。','质疑':'——但风险是否可控？' };
+  const p = (prefixes[sig.emotion.value]||[''])[randInt(2)] || '';
+  const s = sufs[sig.stance.value] || '';
+  return p + text.slice(0,40) + s;
+}
+
+/* ============================================================
+ *  单步传播
+ * ============================================================ */
+async function runOneStep() {
+  if (S.waitingHuman) return false;
+  S.timeStep++;
+  document.getElementById('s-step').textContent = S.timeStep;
+  // 衰减
+  if (!activeAblations.has('noDecay')) {
+    S.nodes.forEach(n => { if (n.state !== 'infected') { n.stimulus *= (1-S.params.decay); if (n.stimulus<0.01) n.stimulus=0; } });
+  }
+  const candidates = S.nodes.filter(n => n.state !== 'infected');
+  if (!candidates.length || !S.activeTexts.length) return false;
+
+  // 评分
+  const scored = candidates.map(n => {
+    let best=null, bestCalc=null;
+    S.activeTexts.forEach(t => { const c = computeRalg(t, n); if (!bestCalc||c.total>bestCalc.total) { best=t; bestCalc=c; } });
+    return { node:n, text:best, calc:bestCalc };
+  });
+  scored.sort((a,b) => b.calc.total - a.calc.total);
+  const topK = scored.slice(0, S.params.topK);
+
+  // 审计
+  const audit = { step:S.timeStep, entries: topK.map(x => ({
+    node:x.node, text:x.text, calc:x.calc,
+    projected: x.node.stimulus + x.calc.total, theta: x.node.theta
+  }))};
+  S.auditRound.push(audit);
+  renderAudit(audit);
+
+  // 推送箭头
+  topK.forEach(x => {
+    S.arrows.push({ fromId:x.text.originNode.id, toId:x.node.id, t:0, color:CIRCLES[x.node.circle].color });
+    x.node.pulse = 1;
+  });
+  animate();
+  await sleep(550);
+
+  // 处理推送
+  for (const x of topK) {
+    const node = x.node, calc = x.calc;
+    if (node.isHuman) {
+      node.stimulus += calc.total;
+      S.waitingHuman = true;
+      S.pendingHuman = { text:x.text, calc, node };
+      showHumanDecision(S.pendingHuman);
+      updateThresholdPanel();
+      return true;
+    }
+    node.stimulus += calc.total;
+    // 阈值判定（消融 noThreshold = 直接感染）
+    const thresholdMet = activeAblations.has('noThreshold') ? true : node.stimulus >= node.theta;
+    if (thresholdMet) {
+      const srcSig = x.text.style;
+      const newText = await generateText(x.text.text, node);
+      node.state = 'infected'; node.text = newText;
+      node.parentTextId = x.text.originId;
+      node.receiveStep = S.timeStep; node.stimulus = 0;
+      // 变异向量
+      const mut = mutationVector(srcSig, node.sig);
+      mut._srcText = x.text.text;
+      mut._tgtText = newText;
+      mut._textSim = textSimilarity(x.text.text, newText);
+      mut._node = node;
+      mut._step = S.timeStep;
+      S.mutations.push(mut);
+      renderMutation(mut);
+      // 新活跃文本
+      S.activeTexts.push({
+        text:newText, style:{...node.sig}, originCircle:node.circle,
+        originNode:node, originId:'n'+node.id+'_s'+S.timeStep,
+        step:S.timeStep, heat:0.6
+      });
+      S.activeTexts.forEach(t => t.heat *= 0.9);
+      addLog(node, newText);
+      updateAuditEntry(node, 'PASS');
+      // 新增互文边
+      S.edges.push({ from:x.text.originNode.id, to:node.id, type:'repost', fromCircle:x.text.originCircle, toCircle:node.circle });
+    } else {
+      node.state = 'active';
+      updateAuditEntry(node, 'ACCUM');
+    }
+  }
+  updateStatus(); updateThresholdPanel(); computeNetMetrics(); draw();
+  return true;
+}
+
+/* ============================================================
+ *  审计面板
+ * ============================================================ */
+function renderAudit(audit) {
+  const list = document.getElementById('auditList');
+  if (list.querySelector('.empty')) list.innerHTML = '';
+  const sd = document.createElement('div'); sd.className = 'audit-step';
+  const title = document.createElement('div'); title.className = 'step-title';
+  const stratLabel = { heat:'热度优先', interest:'兴趣匹配', mixed:'混合策略' }[S.params.strategy] || '混合';
+  title.textContent = `▸ 第 ${audit.step} 步 · Top-${audit.entries.length} 推送 · ${stratLabel}`;
+  sd.appendChild(title);
+  audit.entries.forEach(e => {
+    const c = CIRCLES[e.node.circle];
+    const nd = document.createElement('div'); nd.className = 'audit-node';
+    const sig = e.node.sig;
+    nd.innerHTML = `
+      <div><span class="name">${e.node.isHuman?'👤 你':'节点 '+(e.node.id+1)}</span>
+      <span class="tag" style="background:${c.color}22;color:${c.color};font-size:9px;padding:1px 5px;border-radius:3px;">${c.name}</span>
+      <span style="font-size:9px;color:#64748b;margin-left:4px">${sig.emotion.value}/${sig.stance.value}</span></div>
+      <div class="formula">
+        R = <b>${e.calc.contrib.sim.toFixed(2)}</b><span class="dim">(语义)</span>
+          + <b>${e.calc.contrib.overlap.toFixed(2)}</b><span class="dim">(圈层)</span>
+          + <b>${e.calc.contrib.friend.toFixed(2)}</b><span class="dim">(朋友)</span>
+          + <b>${e.calc.contrib.heat.toFixed(2)}</b><span class="dim">(热度)</span>
+          + <b>${e.calc.contrib.recency.toFixed(2)}</b><span class="dim">(时效)</span>
+        = <b>${e.calc.total.toFixed(3)}</b>
+      </div>
+      <div class="verdict" data-node-id="${e.node.id}">
+        刺激累积：${e.node.stimulus.toFixed(2)} + ${e.calc.total.toFixed(2)} =
+        <span style="color:#60a5fa;">${(e.node.stimulus+e.calc.total).toFixed(2)}</span>
+        / ε_B = ${e.node.theta.toFixed(2)}
+        <div class="bar"><div class="bar-inner" style="width:${Math.min(100,(e.node.stimulus+e.calc.total)/e.node.theta*100)}%"></div></div>
+      </div>`;
+    sd.appendChild(nd);
+  });
+  list.appendChild(sd); list.scrollTop = list.scrollHeight;
+}
+function updateAuditEntry(node, verdict) {
+  const el = document.querySelector(`.verdict[data-node-id="${node.id}"]`);
+  if (!el) return;
+  if (verdict === 'PASS') {
+    el.classList.add('pass');
+    el.innerHTML = `✅ 超过阈值 ε_B=${node.theta.toFixed(2)}，触发文本感染`;
+  } else {
+    el.classList.add('accum');
+    el.innerHTML = `⏳ 未达阈值，累积中 · ${node.stimulus.toFixed(2)}/${node.theta.toFixed(2)}`;
+  }
+}
+
+/* ============================================================
+ *  阈值面板
+ * ============================================================ */
+function updateThresholdPanel() {
+  const list = document.getElementById('thresholdList');
+  const active = S.nodes.filter(n => n.state !== 'inactive' || n.stimulus > 0.01);
+  if (!active.length) { list.innerHTML = '<div class="empty">尚无节点激活</div>'; return; }
+  list.innerHTML = active.map(n => {
+    const c = CIRCLES[n.circle];
+    const ratio = Math.min(1, n.stimulus / n.theta);
+    const cls = n.state === 'infected' ? 'done' : ratio >= 0.7 ? 'over' : '';
+    const sig = n.sig;
+    return `<div class="node-row">
+      <span class="id">${n.isHuman?'👤':(n.id+1)}</span>
+      <span class="circle-tag" style="background:${c.color}22;color:${c.color};">${c.name}</span>
+      <div class="thr"><div class="thr-bar"><div class="thr-fill ${cls}" style="width:${ratio*100}%"></div></div></div>
+      <span class="vals">${n.stimulus.toFixed(2)}/${n.theta.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+ *  意义变异面板
+ * ============================================================ */
+function renderMutation(mut) {
+  const list = document.getElementById('mutationList');
+  if (list.querySelector('.empty')) list.innerHTML = '';
+  const e = document.createElement('div'); e.className = 'mutation-entry';
+  const node = mut._node;
+  const c = CIRCLES[node.circle];
+  let dimsHtml = '';
+  const dimKeys = ['semantic','frame','stance','emotion','style','action'];
+  dimKeys.forEach((k, i) => {
+    const d = mut[k];
+    const bg = d.changed ? DIM_COLORS[i] + '22' : '#1e293b';
+    const fg = d.changed ? DIM_COLORS[i] : '#64748b';
+    dimsHtml += `<span class="dim-tag" style="background:${bg};color:${fg}">${DIM_NAMES[i]}: ${d.from}→${d.to}</span>`;
+  });
+  e.innerHTML = `
+    <div class="meta">
+      <span style="color:#60a5fa;font-weight:600">${node.isHuman?'👤':('节点'+(node.id+1))}</span>
+      <span class="tag" style="background:${c.color}22;color:${c.color}">${c.name}</span>
+      <span>步 ${mut._step}</span>
+      <span style="color:#8b5cf6">总变异: ${mut._total.toFixed(3)}</span>
+      <span style="color:#64748b">余弦相似: ${mut._cosSim.toFixed(3)}</span>
+      <span style="color:#64748b">文本相似: ${mut._textSim.toFixed(3)}</span>
+    </div>
+    <div class="from-text">源: ${mut._srcText}</div>
+    <div class="to-text">→ ${mut._tgtText}</div>
+    <div class="vec">${dimsHtml}</div>`;
+  list.appendChild(e); list.scrollTop = list.scrollHeight;
+}
+
+/* ============================================================
+ *  人工节点：信息填写 + 推送决策 + 问卷
+ * ============================================================ */
+function showHumanDecision(r) {
+  const feed = document.getElementById('humanFeed');
+  const c = CIRCLES[r.text.originCircle];
+  // 如果还没有填写个人信息，先填表
+  if (!S.humanNode.profile) {
+    feed.innerHTML = `
+      <div class="human-card">
+        <div class="label">👤 人工节点注册</div>
+        <div class="meta" style="margin-bottom:12px;">请填写你的基本信息，系统将据此构建你的六维风格签名</div>
+        <div class="human-form-row">
+          <label>年龄</label>
+          <select id="hp-age">
+            <option value="18-24">18-24</option>
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45+">45+</option>
+          </select>
+        </div>
+        <div class="human-form-row">
+          <label>职业领域（对应圈层归属）</label>
+          <select id="hp-circle">
+            ${CIRCLES.map((c,i) => `<option value="${i}">${c.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="human-form-row">
+          <label>情感倾向</label>
+          <select id="hp-emotion"><option>积极</option><option selected>中性</option><option>消极</option></select>
+        </div>
+        <div class="human-form-row">
+          <label>立场倾向</label>
+          <select id="hp-stance"><option>支持</option><option selected>中立</option><option>质疑</option></select>
+        </div>
+        <div class="human-form-row">
+          <label>语言风格</label>
+          <select id="hp-style"><option>正式</option><option selected>非正式</option><option>网络化</option></select>
+        </div>
+        <div class="human-form-row">
+          <label>语义倾向</label>
+          <select id="hp-semantic"><option selected>事实陈述</option><option>推测表达</option><option>情感渲染</option></select>
+        </div>
+        <div class="human-form-row">
+          <label>框架偏好</label>
+          <select id="hp-frame"><option>经济框架</option><option selected>社会框架</option><option>道德框架</option></select>
+        </div>
+        <div class="human-form-row">
+          <label>行动指向</label>
+          <select id="hp-action"><option selected>信息传递</option><option>行动呼吁</option><option>观点表达</option></select>
+        </div>
+        <div class="human-form-row">
+          <label>你平时关注的话题关键词（逗号分隔）</label>
+          <textarea id="hp-keywords" rows="2" placeholder="例如：AI, 就业, 科技伦理"></textarea>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="green" style="flex:1" onclick="submitProfile()">确认注册 →</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // 显示推送决策
+  feed.innerHTML = `
+    <div class="human-card">
+      <div class="label">🔔 AMSI 算法推送到达</div>
+      <div class="meta">
+        来源圈层：${c.name} · R_alg = ${r.calc.total.toFixed(3)}<br>
+        累积刺激：${r.node.stimulus.toFixed(2)} / ε_B = ${r.node.theta.toFixed(2)}<br>
+        六维贡献：语义${r.calc.contrib.sim.toFixed(2)} · 圈层${r.calc.contrib.overlap.toFixed(2)} · 朋友${r.calc.contrib.friend.toFixed(2)} · 热度${r.calc.contrib.heat.toFixed(2)} · 时效${r.calc.contrib.recency.toFixed(2)}
+      </div>
+      <div class="label" style="color:#64748b;margin-bottom:4px">推送文本</div>
+      <div class="text">${r.text.text}</div>
+      <div class="label" style="color:#64748b;margin-bottom:6px">你的选择</div>
+      <div class="human-actions">
+        <button class="sec" onclick="humanDecide('ignore')">忽略</button>
+        <button class="green" onclick="humanDecide('forward')">直接转发</button>
+        <button onclick="humanDecide('rewrite')">改写转发</button>
+      </div>
+      <div id="rewriteArea" style="display:none;margin-top:10px">
+        <textarea class="human-rewrite" id="rewriteInput" placeholder="输入你的改写版本..."></textarea>
+        <button class="sec" onclick="llmAssist()" style="font-size:10.5px;margin-bottom:6px">✨ AI 帮我改写</button>
+        <div style="display:flex;gap:6px">
+          <button class="green" onclick="humanSubmitRewrite()" style="flex:1">提交改写</button>
+          <button class="sec" onclick="document.getElementById('rewriteArea').style.display='none'" style="flex:1">取消</button>
+        </div>
+      </div>
+    </div>`;
+  switchTab('human', 1);
+}
+
+window.submitProfile = function() {
+  const circle = +document.getElementById('hp-circle').value;
+  S.humanNode.circle = circle;
+  S.humanNode.sig = {
+    semantic: { value: document.getElementById('hp-semantic').value, idx: document.getElementById('hp-semantic').selectedIndex, n: 3 },
+    frame: { value: document.getElementById('hp-frame').value, idx: document.getElementById('hp-frame').selectedIndex, n: 3 },
+    stance: { value: document.getElementById('hp-stance').value, idx: document.getElementById('hp-stance').selectedIndex, n: 3 },
+    emotion: { value: document.getElementById('hp-emotion').value, idx: document.getElementById('hp-emotion').selectedIndex, n: 3 },
+    style: { value: document.getElementById('hp-style').value, idx: document.getElementById('hp-style').selectedIndex, n: 3 },
+    action: { value: document.getElementById('hp-action').value, idx: document.getElementById('hp-action').selectedIndex, n: 3 },
+  };
+  S.humanNode.profile = {
+    age: document.getElementById('hp-age').value,
+    circle: CIRCLES[circle].name,
+    keywords: document.getElementById('hp-keywords').value,
+  };
+  S.humanNode.x = CIRCLES[circle].cx;
+  S.humanNode.y = CIRCLES[circle].cy - CIRCLES[circle].r - 0.06;
+  // 更新人工节点位置到对应圈层上方
+  draw();
+  // 重新显示推送决策
+  showHumanDecision(S.pendingHuman);
+};
+
+window.humanDecide = function(action) {
+  if (action === 'ignore') {
+    S.humanNode.state = 'active';
+    addLog(S.humanNode, '【忽略推送】', false, true);
+    showSurvey('ignore');
+  } else if (action === 'forward') {
+    commitHumanText(S.pendingHuman.text.text, 'forward');
+  } else if (action === 'rewrite') {
+    document.getElementById('rewriteArea').style.display = 'block';
+  }
+};
+window.humanSubmitRewrite = function() {
+  const v = document.getElementById('rewriteInput').value.trim();
+  if (!v) { alert('请输入改写文本'); return; }
+  commitHumanText(v, 'rewrite');
+};
+window.llmAssist = async function() {
+  const btn = event.target;
+  btn.textContent = '生成中...'; btn.disabled = true;
+  const t = await generateText(S.pendingHuman.text.text, S.humanNode);
+  document.getElementById('rewriteInput').value = t;
+  btn.textContent = '✨ AI 帮我改写'; btn.disabled = false;
+};
+
+function commitHumanText(text, action) {
+  const r = S.pendingHuman;
+  const srcSig = r.text.style;
+  S.humanNode.state = 'infected'; S.humanNode.text = text;
+  S.humanNode.receiveStep = S.timeStep; S.humanNode.stimulus = 0;
+  // 变异向量
+  const mut = mutationVector(srcSig, S.humanNode.sig);
+  mut._srcText = r.text.text; mut._tgtText = text;
+  mut._textSim = textSimilarity(r.text.text, text);
+  mut._node = S.humanNode; mut._step = S.timeStep;
+  S.mutations.push(mut);
+  renderMutation(mut);
+  // 新活跃文本
+  S.activeTexts.push({
+    text, style:{...S.humanNode.sig}, originCircle:S.humanNode.circle,
+    originNode:S.humanNode, originId:'human_s'+S.timeStep, step:S.timeStep, heat:0.6
+  });
+  addLog(S.humanNode, text, false, true);
+  updateAuditEntry(S.humanNode, 'PASS');
+  S.edges.push({ from:r.text.originNode.id, to:S.humanNode.id, type:'repost', fromCircle:r.text.originCircle, toCircle:S.humanNode.circle });
+  showSurvey(action);
+}
+
+/* ============================================================
+ *  小问卷
+ * ============================================================ */
+const SURVEY_QUESTIONS = {
+  ignore: [
+    { q: '你为什么选择忽略这条推送？', opts: ['内容不感兴趣', '立场不符', '来源不可信', '信息量不足', '其他'] },
+    { q: '这条推送与你的日常关注话题相关吗？', opts: ['非常相关', '比较相关', '一般', '不太相关', '完全无关'] },
+  ],
+  forward: [
+    { q: '你为什么选择直接转发？', opts: ['认同内容', '信息有价值', '社交义务', '扩大影响', '其他'] },
+    { q: '你认为转发后谁最可能看到？', opts: ['同圈层朋友', '跨圈层用户', '算法推荐受众', '不确定'] },
+  ],
+  rewrite: [
+    { q: '你改写时主要调整了什么？', opts: ['语气强度', '词汇选择', '句式结构', '立场表达', '框架视角'] },
+    { q: '你改写的目的是？', opts: ['更符合自己风格', '增强说服力', '适应目标受众', '规避风险', '其他'] },
+    { q: '改写后你认为文本的核心事实变了吗？', opts: ['完全保留', '部分偏移', '显著改变', '不确定'] },
+  ],
+};
+
+function showSurvey(action) {
+  const feed = document.getElementById('humanFeed');
+  const qs = SURVEY_QUESTIONS[action] || [];
+  let html = `<div class="human-card"><div class="label">📋 决策问卷</div>`;
+  qs.forEach((q, qi) => {
+    html += `<div class="survey-q"><div class="q-text"><b>Q${qi+1}</b> ${q.q.text || q.q}</div><div class="survey-options">`;
+    q.opts.forEach((opt, oi) => {
+      html += `<button class="survey-opt" data-q="${qi}" data-o="${oi}" onclick="selectSurvey(this)">${opt}</button>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `<div class="survey-q"><div class="q-text"><b>Q${qs.length+1}</b> 其他补充说明（选填）</div><textarea class="human-rewrite" id="surveyExtra" rows="2" placeholder="输入补充..."></textarea></div>`;
+  html += `<div style="display:flex;gap:6px;margin-top:8px"><button class="green" style="flex:1" onclick="submitSurvey('${action}')">提交问卷</button></div></div>`;
+  feed.innerHTML = html;
+}
+
+window.selectSurvey = function(btn) {
+  const q = btn.dataset.q;
+  btn.parentElement.querySelectorAll('.survey-opt').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+window.submitSurvey = function(action) {
+  const answers = [];
+  document.querySelectorAll('.survey-opt.active').forEach(b => {
+    answers.push({ q: +b.dataset.q, o: +b.dataset.o, text: b.textContent });
+  });
+  const extra = (document.getElementById('surveyExtra') || {}).value || '';
+  S.humanHistory.push({ action, answers, extra, step: S.timeStep });
+  // 导出数据
+  console.log('=== 人工节点决策数据 ===', JSON.stringify(S.humanHistory, null, 2));
+
+  S.waitingHuman = false; S.pendingHuman = null;
+  document.getElementById('humanFeed').innerHTML = '<div class="empty">已记录。<br>等待下一次算法推送...</div>';
+  updateStatus(); updateThresholdPanel(); computeNetMetrics(); draw();
+  continueAfterHuman();
+};
+
+async function continueAfterHuman() { await sleep(400); if (S.running) loop(); }
+
+/* ============================================================
+ *  主循环
+ * ============================================================ */
+async function loop() {
+  while (S.running && S.timeStep < S.params.maxSteps) {
+    const cont = await runOneStep();
+    if (S.waitingHuman) return;
+    if (!cont) break;
+    await sleep(400);
+  }
+  S.running = false;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStart').textContent = '▶ 重新开始';
+  document.getElementById('btnStep').disabled = true;
+}
+
+function startSimulation() {
+  if (S.running || S.waitingHuman) return;
+  resetSim(false);
+  const seed = S.nodes[0];
+  seed.state = 'infected'; seed.text = S.params.seedText;
+  seed.receiveStep = 0; seed.pulse = 1;
+  S.activeTexts = [{ text:S.params.seedText, style:{...seed.sig}, originCircle:seed.circle, originNode:seed, originId:'seed', step:0, heat:1.0 }];
+  addLog(seed, S.params.seedText, true);
+  updateStatus(); updateThresholdPanel(); draw(); animate();
+  S.running = true; S.timeStep = 0;
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnStart').textContent = '传播中...';
+  document.getElementById('btnStep').disabled = false;
+  loop();
+}
+
+/* ============================================================
+ *  UI 辅助
+ * ============================================================ */
+function updateStatus() {
+  const inf = S.nodes.filter(n => n.state === 'infected').length;
+  document.getElementById('s-infected').textContent = inf;
+  document.getElementById('s-texts').textContent = S.activeTexts.length;
+  document.getElementById('s-calls').textContent = S.apiCalls;
+  document.getElementById('s-strategy').textContent = { heat:'热度', interest:'兴趣', mixed:'混合' }[S.params.strategy] || '混合';
+  // 网络徽章
+  const m = S.netMetrics;
+  if (m) {
+    document.getElementById('netBadge').innerHTML = `
+      <div class="row"><span class="lbl">节点</span><span class="v">${S.nodes.length}</span></div>
+      <div class="row"><span class="lbl">互文边</span><span class="v">${S.edges.length}</span></div>
+      <div class="row"><span class="lbl">平均度</span><span class="v">${m.avgDeg.toFixed(2)}</span></div>
+      <div class="row"><span class="lbl">聚类系数</span><span class="v">${m.avgClust.toFixed(3)}</span></div>
+      <div class="row"><span class="lbl">模体度</span><span class="v">${m.motifs}</span></div>`;
+  }
+}
+
+function addLog(node, text, isSeed, isHuman) {
+  const list = document.getElementById('logList');
+  if (list.querySelector('.empty')) list.innerHTML = '';
+  const c = CIRCLES[node.circle];
+  const sig = node.sig;
+  const e = document.createElement('div'); e.className = 'log-entry';
+  e.style.borderLeftColor = isHuman ? '#a855f7' : c.color;
+  e.innerHTML = `
+    <div class="meta">
+      <span class="node-id">${isHuman?'👤 你':'节点 '+(node.id+1)}</span>
+      <span class="tag" style="background:${c.color}22;color:${c.color}">${c.name}</span>
+      <span>${sig?sig.emotion.value:''}/${sig?sig.stance.value:''}</span>
+      ${isSeed?'<span class="tag" style="background:#fbbf2422;color:#fbbf24">种子</span>':''}
+      ${isHuman?'<span class="tag" style="background:#a855f722;color:#a855f7">人工</span>':''}
+    </div>
+    <div class="content">${text}</div>`;
+  list.appendChild(e); list.scrollTop = list.scrollHeight;
+}
+
+function switchTab(name, panelIdx) {
+  const panels = document.querySelectorAll('.panel');
+  const panel = panels[panelIdx || 0];
+  panel.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  panel.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === 'pane-' + name));
+}
+
+function resetSim(rebuild) {
+  S.running = false; S.waitingHuman = false; S.timeStep = 0; S.apiCalls = 0;
+  S.activeTexts = []; S.auditRound = []; S.pendingHuman = null; S.arrows = []; S.mutations = [];
+  S.humanHistory = [];
+  document.getElementById('logList').innerHTML = '<div class="empty">尚无记录</div>';
+  document.getElementById('auditList').innerHTML = '<div class="empty">点击「开始」后<br>实时展示每轮 R_alg 算法推送的完整计算过程</div>';
+  document.getElementById('thresholdList').innerHTML = '<div class="empty">尚无节点激活</div>';
+  document.getElementById('mutationList').innerHTML = '<div class="empty">尚无文本变异<br>每次 LLM 改写后此处展示六维意义变异向量</div>';
+  document.getElementById('humanFeed').innerHTML = '<div class="empty">等待算法推送...<br>点击「开始」后算法推送到达你的节点时会暂停</div>';
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStart').textContent = '▶ 开始';
+  document.getElementById('btnStep').disabled = true;
+  if (rebuild) buildNodes();
+  S.nodes.forEach(n => { n.state = 'inactive'; n.text = null; n.stimulus = 0; n.pulse = 0; n.receiveStep = -1; n.profile = null; });
+  renderNetMetrics();
+  updateStatus(); draw();
+}
+
+function initSim() {
+  buildNodes();
+  resetSim(true);
+  resize();
+  // 副标题
+  const stratLabel = { heat:'热度优先', interest:'兴趣匹配', mixed:'混合策略' }[S.params.strategy] || '混合';
+  const abl = S.params.ablations.length ? ' · 消融×'+S.params.ablations.length : '';
+  document.getElementById('simSubtitle').textContent = `${stratLabel}${abl}`;
+}
+
+/* ============================================================
+ *  事件
+ * ============================================================ */
+document.getElementById('btnStart').addEventListener('click', startSimulation);
+document.getElementById('btnStep').addEventListener('click', async () => { if (S.running) await runOneStep(); });
+document.getElementById('btnReset').addEventListener('click', () => resetSim(true));
+document.getElementById('btnBack').addEventListener('click', () => {
+  document.getElementById('simPage').classList.remove('visible');
+  document.getElementById('setupPage').classList.remove('setup-hidden');
+});
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const panel = t.closest('.panel');
+    panel.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === t));
+    panel.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === 'pane-' + t.dataset.tab));
+  });
+});
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ============================================================
+ *  启动
+ * ============================================================ */
+initSetup();
+</script>
+</body>
+</html>
