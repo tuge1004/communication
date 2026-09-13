@@ -3,158 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AMSI · 文本主体传播模拟</title>
+<title>AMSI · 文本主体传播模拟 v2</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
 body{background:#f1f5f9;color:#0f172a;overflow:hidden}
-
-/* ==================== 配置页 ==================== */
 #setupPage{position:fixed;inset:0;background:linear-gradient(135deg,#e0e7ff 0%,#f0fdf4 50%,#fef3c7 100%);display:flex;align-items:center;justify-content:center;z-index:100;overflow-y:auto;padding:20px}
 .setup-card{background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.12);max-width:820px;width:90%;padding:36px 40px;max-height:92vh;overflow-y:auto}
 .setup-card h1{font-size:22px;font-weight:700;margin-bottom:4px}
 .setup-card .subtitle{font-size:13px;color:#64748b;margin-bottom:24px}
 .setup-section{margin-bottom:22px}
 .setup-section h3{font-size:12px;color:#64748b;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;border-bottom:1px solid #e2e8f0;padding-bottom:6px}
-
-/* 情境卡片 */
 .scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .scenario-card{padding:14px;border:2px solid #e2e8f0;background:#f8fafc;border-radius:10px;cursor:pointer;transition:.15s;font-family:inherit}
-.scenario-card:hover{border-color:#6366f1;box-shadow:0 2px 8px rgba(99,102,241,.1)}
-.scenario-card.active{border-color:#6366f1;background:#eef2ff;box-shadow:0 2px 12px rgba(99,102,241,.15)}
+.scenario-card:hover{border-color:#6366f1}
+.scenario-card.active{border-color:#6366f1;background:#eef2ff}
 .scenario-card .sc-name{font-size:13px;font-weight:600;color:#1e293b;margin-bottom:4px}
 .scenario-card .sc-bg{font-size:11px;color:#64748b;line-height:1.55}
 .scenario-card .sc-icon{font-size:18px;margin-bottom:6px}
-
-/* 实验模式卡片 */
 .experiment-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .experiment-card{padding:16px 12px;border:2px solid #e2e8f0;background:#f8fafc;border-radius:10px;cursor:pointer;transition:.15s;font-family:inherit;text-align:center}
-.experiment-card:hover{border-color:#3b82f6;box-shadow:0 2px 8px rgba(59,130,246,.1)}
-.experiment-card.active{border-color:#3b82f6;background:#eff6ff;box-shadow:0 2px 12px rgba(59,130,246,.15)}
+.experiment-card:hover{border-color:#3b82f6}
+.experiment-card.active{border-color:#3b82f6;background:#eff6ff}
 .experiment-card .ex-icon{font-size:22px;margin-bottom:8px}
 .experiment-card .ex-name{font-size:12px;font-weight:600;color:#1e293b;margin-bottom:4px}
 .experiment-card .ex-desc{font-size:10px;color:#64748b;line-height:1.5}
-
-/* 通用选择行 */
-.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.preset-btn{padding:8px 14px;border:2px solid #e2e8f0;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:12px;color:#475569;transition:.15s;font-family:inherit}
-.preset-btn:hover{border-color:#3b82f6;color:#3b82f6}
-.preset-btn.active{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
 .mode-row{display:flex;gap:8px;margin-bottom:8px}
 .mode-opt{flex:1;padding:10px 8px;border:2px solid #e2e8f0;background:#f8fafc;border-radius:8px;cursor:pointer;text-align:center;font-size:11px;color:#475569;transition:.15s;font-family:inherit;line-height:1.5}
 .mode-opt:hover{border-color:#3b82f6}
 .mode-opt.active{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
-
-/* 表单行 */
 .form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;font-size:13px;color:#334155}
 .form-row label{flex:0 0 auto;margin-right:12px}
 .form-row input[type=range]{flex:1;margin:0 10px;accent-color:#3b82f6;height:4px}
 .form-row input[type=number],.form-row select{background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:6px;padding:5px 8px;font-size:12px;width:70px;font-family:inherit}
-.form-row input[type=text],.form-row textarea{background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font-size:13px;width:100%;font-family:inherit}
+.form-row input[type=text]{background:#f8fafc;color:#0f172a;border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font-size:13px;width:100%;font-family:inherit}
 .form-row .val{color:#3b82f6;font-weight:600;font-size:12px;width:36px;text-align:right;font-family:monospace}
-
-/* 提示框 */
 .note-box{background:#f1f5f9;border-left:3px solid #94a3b8;border-radius:6px;padding:10px 14px;font-size:11.5px;color:#64748b;line-height:1.7;margin-top:10px}
 .note-box b{color:#475569}
-.note-box.hidden{display:none}
-
-/* 按钮 */
 .btn-launch{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit;margin-top:8px}
 .btn-launch:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.3)}
 .setup-hidden{display:none!important}
-
-/* ==================== 模拟主界面 ==================== */
 #simPage{display:none;height:100vh}
-#simPage.visible{display:grid;grid-template-columns:1fr 340px 400px;grid-template-rows:52px 1fr 32px;height:100vh;gap:1px;background:#cbd5e1}
-
-/* 顶栏 */
+#simPage.visible{display:grid;grid-template-columns:1fr 360px 420px;grid-template-rows:52px 1fr 32px;height:100vh;gap:1px;background:#cbd5e1}
 header{grid-column:1/-1;background:#1e293b;padding:0 18px;display:flex;align-items:center;justify-content:space-between}
 header h1{font-size:14px;font-weight:600;color:#e2e8f0;display:flex;align-items:baseline;gap:8px}
 header h1 span{color:#94a3b8;font-weight:400;font-size:11px}
 .controls{display:flex;gap:6px;align-items:center}
 .exp-ctrl{display:flex;align-items:center;gap:6px;margin-right:12px}
-.exp-ctrl label{font-size:11px;color:#94a3b8;white-space:nowrap}
-.exp-ctrl input[type=range]{width:80px;accent-color:#3b82f6;height:3px;margin:0 4px}
+.exp-ctrl label{font-size:11px;color:#94a3b8}
+.exp-ctrl input[type=range]{width:80px;accent-color:#3b82f6}
 .exp-ctrl .val{color:#60a5fa;font-size:11px;font-family:monospace;width:32px;text-align:right}
-button{background:#3b82f6;color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:11px;transition:.15s;font-family:inherit}
+button{background:#3b82f6;color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-family:inherit}
 button:hover{background:#2563eb}
 button:disabled{background:#475569;cursor:not-allowed;opacity:.5}
 button.sec{background:#475569}
 button.sec:hover{background:#64748b}
-
-/* 网络画布 */
 #canvasWrap{position:relative;background:#f8fafc;overflow:hidden}
 #network{display:block;width:100%;height:100%}
-.hint{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);padding:9px 12px;border-radius:7px;font-size:10.5px;color:#64748b;max-width:280px;border:1px solid #e2e8f0;line-height:1.55;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.hint{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);padding:9px 12px;border-radius:7px;font-size:10.5px;color:#64748b;max-width:300px;border:1px solid #e2e8f0;line-height:1.55}
 .hint b{color:#0f172a}
-.legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.92);padding:9px 12px;border-radius:7px;font-size:10px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.legend-title{color:#64748b;font-size:9px;margin-bottom:5px;letter-spacing:.05em}
+.legend{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.92);padding:9px 12px;border-radius:7px;font-size:10px;border:1px solid #e2e8f0}
+.legend-title{color:#64748b;font-size:9px;margin-bottom:5px}
 .legend-item{display:flex;align-items:center;gap:7px;margin-bottom:3px;color:#334155}
-.legend-item:last-child{margin-bottom:0}
 .dot{width:9px;height:9px;border-radius:50%}
 .dot-border{width:9px;height:9px;border-radius:50%;background:#475569;border:2px solid #fbbf24;box-sizing:border-box}
-.overlay-badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.92);padding:8px 12px;border-radius:7px;font-size:10px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.overlay-badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.92);padding:8px 12px;border-radius:7px;font-size:10px;border:1px solid #e2e8f0}
 .overlay-badge .row{display:flex;justify-content:space-between;gap:12px;margin-bottom:3px}
-.overlay-badge .row:last-child{margin-bottom:0}
 .overlay-badge .lbl{color:#64748b}
 .overlay-badge .v{color:#0f172a;font-weight:600;font-family:monospace}
-.stability-badge{position:absolute;top:12px;right:140px;background:rgba(30,41,59,.92);padding:8px 14px;border-radius:7px;font-size:11px;border:1px solid #334155;box-shadow:0 2px 8px rgba(0,0,0,.15);color:#e2e8f0}
-.stability-badge .sb-label{font-size:9px;color:#94a3b8;letter-spacing:.05em;margin-bottom:2px}
-.stability-badge .sb-val{font-size:18px;font-weight:700;font-family:monospace}
-.stability-badge .sb-bar{height:4px;background:#334155;border-radius:2px;margin-top:4px;overflow:hidden}
-.stability-badge .sb-fill{height:100%;background:linear-gradient(90deg,#ef4444,#f59e0b,#10b981);transition:width .5s}
-
-/* 面板通用 */
 .panel{background:#1e293b;display:flex;flex-direction:column;overflow:hidden}
-.panel-header{padding:10px 14px;border-bottom:1px solid #334155;font-size:12px;font-weight:600;color:#60a5fa;letter-spacing:.03em;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.panel-header{padding:10px 14px;border-bottom:1px solid #334155;font-size:12px;font-weight:600;color:#60a5fa;display:flex;align-items:center;justify-content:space-between}
 .panel-header .ph-sub{font-size:10px;color:#94a3b8;font-weight:400}
 .pane-content{flex:1;overflow-y:auto;padding:12px}
 .pane-content::-webkit-scrollbar{width:5px}
 .pane-content::-webkit-scrollbar-thumb{background:#475569;border-radius:3px}
 .empty{color:#475569;text-align:center;padding:24px 16px;font-size:11px;line-height:1.6}
-
-/* 算法审计 */
 .audit-step{border-left:2px solid #3b82f6;padding:8px 10px;margin-bottom:10px;background:#0f172a;border-radius:0 5px 5px 0;font-size:11px}
 .audit-step .step-title{color:#60a5fa;font-weight:600;margin-bottom:8px;font-size:11px}
 .audit-node{padding:6px 0;border-bottom:1px solid #1e293b;font-size:10.5px;line-height:1.65}
 .audit-node:last-child{border-bottom:none}
 .audit-node .name{color:#e2e8f0;font-weight:600;margin-right:6px}
-.audit-node .formula{color:#94a3b8;font-family:"SF Mono",Menlo,monospace;font-size:10px;display:block;margin:4px 0;padding-left:10px;border-left:1px solid #334155}
-.audit-node .formula b{color:#fbbf24;font-weight:600}
+.audit-node .formula{color:#94a3b8;font-family:monospace;font-size:10px;display:block;margin:4px 0;padding-left:10px;border-left:1px solid #334155}
+.audit-node .formula b{color:#fbbf24}
 .audit-node .formula .dim{color:#64748b}
-.audit-node .verdict{color:#94a3b8;font-size:10px;margin-top:3px}
-.audit-node .verdict.pass{color:#34d399}
-.audit-node .verdict.accum{color:#fbbf24}
-.dim-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px}
-.dim-bar-row .dbn{width:60px;color:#94a3b8;flex-shrink:0}
-.dim-bar-row .dbb{flex:1;height:6px;background:#1e293b;border-radius:3px;overflow:hidden}
-.dim-bar-row .dbf{height:100%;border-radius:3px;transition:width .3s}
-.dim-bar-row .dbv{width:36px;text-align:right;color:#64748b;font-family:monospace;font-size:9.5px;flex-shrink:0}
-.audit-total{margin-top:6px;padding:6px 8px;background:#0b1220;border-radius:4px;display:flex;justify-content:space-between;align-items:center}
-.audit-total .at-label{font-size:10px;color:#94a3b8}
-.audit-total .at-val{font-size:14px;font-weight:700;color:#fbbf24;font-family:monospace}
-.audit-total .at-verdict{font-size:10px;padding:2px 8px;border-radius:3px}
+.audit-node .push-list{margin:5px 0;padding:4px 8px;background:#0b1220;border-radius:4px;font-size:9.5px}
+.audit-node .push-item{display:flex;justify-content:space-between;padding:2px 0;color:#94a3b8}
+.audit-node .push-item b{color:#cbd5e1}
+.audit-node .push-item.dominant b{color:#fbbf24}
+.audit-total{margin-top:6px;padding:6px 8px;background:#0b1220;border-radius:4px;display:flex;justify-content:space-between;align-items:center;font-size:10px}
+.audit-total .at-val{color:#fbbf24;font-weight:700;font-family:monospace}
+.audit-total .at-verdict{padding:2px 8px;border-radius:3px}
 .audit-total .at-verdict.pass{background:#05966922;color:#34d399}
 .audit-total .at-verdict.accum{background:#f59e0b22;color:#fbbf24}
-.penetration-flag{display:inline-block;padding:2px 6px;background:#fbbf2422;color:#fbbf24;border-radius:3px;font-size:9px;margin-left:4px}
-
-/* 文本演化面板 */
 .text-evo-stats{background:#0f172a;border-radius:6px;padding:10px 12px;margin-bottom:12px;border:1px solid #334155}
-.text-evo-stats .tes-title{color:#60a5fa;font-weight:600;font-size:10px;margin-bottom:8px;letter-spacing:.05em}
+.text-evo-stats .tes-title{color:#60a5fa;font-weight:600;font-size:10px;margin-bottom:8px}
 .tes-row{display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:5px;color:#94a3b8}
 .tes-row b{color:#e2e8f0;font-family:monospace}
-.tes-dim-bars{margin:8px 0}
 .tes-dim-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:10px}
-.tes-dim-row .tdn{width:52px;color:#94a3b8;flex-shrink:0}
+.tes-dim-row .tdn{width:60px;color:#94a3b8}
 .tes-dim-row .tdb{flex:1;height:5px;background:#1e293b;border-radius:3px;overflow:hidden}
-.tes-dim-row .tdf{height:100%;border-radius:3px;transition:width .3s}
-.tes-dim-row .tdv{width:32px;text-align:right;color:#64748b;font-family:monospace;font-size:9.5px;flex-shrink:0}
-.coupling-metric{margin-top:8px;padding:8px 10px;background:#0b1220;border-radius:4px;border:1px solid #1e293b}
-.coupling-metric .cm-label{font-size:10px;color:#94a3b8;margin-bottom:4px}
-.coupling-metric .cm-val{font-size:16px;font-weight:700;color:#a855f7;font-family:monospace}
-.coupling-metric .cm-desc{font-size:9px;color:#64748b;margin-top:2px;line-height:1.5}
-
-/* 文本链 */
+.tes-dim-row .tdf{height:100%;border-radius:3px}
+.tes-dim-row .tdv{width:32px;text-align:right;color:#64748b;font-family:monospace;font-size:9.5px}
 .text-chain-entry{background:#0f172a;border-radius:5px;padding:10px;margin-bottom:8px;font-size:11px;line-height:1.55;border-left:3px solid #3b82f6}
 .text-chain-entry.seed{border-left-color:#fbbf24}
 .text-chain-entry .tc-meta{font-size:9.5px;color:#64748b;margin-bottom:5px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
@@ -162,57 +111,37 @@ button.sec:hover{background:#64748b}
 .text-chain-entry .tc-community{font-size:9px;padding:1px 5px;border-radius:3px}
 .text-chain-entry .tc-text{color:#e2e8f0;font-size:11px;padding:6px 8px;background:#0b1220;border-radius:4px;margin-bottom:6px;line-height:1.6}
 .text-chain-entry .tc-from-text{color:#64748b;font-size:10px;border-left:2px solid #334155;padding-left:6px;margin-bottom:4px}
-.semantic-preservation{margin:6px 0}
-.semantic-preservation .sp-label{font-size:9.5px;color:#94a3b8;margin-bottom:3px;display:flex;justify-content:space-between}
-.semantic-preservation .sp-label b{color:#e2e8f0;font-family:monospace}
-.semantic-preservation .sp-bar{height:6px;background:#1e293b;border-radius:3px;overflow:hidden}
-.semantic-preservation .sp-fill{height:100%;border-radius:3px;transition:width .3s}
+.text-chain-entry .tc-decision{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;margin-bottom:4px}
+.text-chain-entry .tc-decision.direct{background:#3b82f622;color:#60a5fa}
+.text-chain-entry .tc-decision.rewrite{background:#a855f722;color:#c084fc}
+.text-chain-entry .tc-decision.challenge{background:#ef444422;color:#f87171}
 .mutation-bars{margin-top:6px}
 .mut-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:10px}
-.mut-bar-row .mbn{width:52px;color:#94a3b8;flex-shrink:0}
+.mut-bar-row .mbn{width:60px;color:#94a3b8}
 .mut-bar-row .mbb{flex:1;height:5px;background:#1e293b;border-radius:3px;overflow:hidden}
-.mut-bar-row .mbf{height:100%;border-radius:3px;transition:width .3s}
-.mut-bar-row .mbv{width:36px;text-align:right;color:#64748b;font-family:monospace;font-size:9.5px;flex-shrink:0}
+.mut-bar-row .mbf{height:100%;border-radius:3px}
+.mut-bar-row .mbv{width:36px;text-align:right;color:#64748b;font-family:monospace;font-size:9.5px}
 .mut-bar-row .mb-changed{font-size:8px;color:#f87171;margin-left:2px}
-
-/* 日志 */
-.log-entry{background:#0f172a;border-left:3px solid #3b82f6;padding:6px 10px;margin-bottom:6px;border-radius:0 5px 5px 0;font-size:11px;line-height:1.55}
-.log-entry .meta{font-size:9.5px;color:#64748b;margin-bottom:3px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.log-entry .node-id{color:#60a5fa;font-weight:600}
-.log-entry .tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px}
-.log-entry .content{color:#cbd5e1}
-
-/* 状态栏 */
 .statusbar{grid-column:1/-1;background:#1e293b;padding:0 18px;display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:#94a3b8}
 .statusbar span b{color:#e2e8f0;font-weight:600;font-family:monospace}
 </style>
 </head>
 <body>
 
-<!-- ==================== 配置页 ==================== -->
 <div id="setupPage">
 <div class="setup-card">
-<h1>AMSI 文本主体传播模拟器</h1>
-<div class="subtitle">圈层涌现 · 算法穿透 · 文本变异 · 传播-生成耦合 · 生成式多智能体仿真</div>
+<h1>AMSI 文本主体传播模拟器 v2</h1>
+<div class="subtitle">一对多推送 · 多信息接收 · 多次发布 · 立场分布 · LLM自主改写</div>
 
 <div class="setup-section">
 <h3>传播情境</h3>
 <div class="scenario-grid" id="scenarioGrid"></div>
-<div class="form-row"><input type="text" id="seedText" placeholder="种子文本（文本感染源头）"></div>
+<div class="form-row"><input type="text" id="seedText" placeholder="种子文本"></div>
 </div>
 
 <div class="setup-section">
 <h3>圈层发现模式</h3>
 <div class="mode-row" id="circleModeRow"></div>
-<div class="note-box">
-<b>说明：</b>演示模式下圈层可选择预设或自动发现；正式实验将基于真实转发/评论网络，通过Louvain/Leiden社区发现方法识别动态圈层，并以结构指标进行校准。
-</div>
-</div>
-
-<div class="setup-section">
-<h3>数据来源</h3>
-<div class="mode-row" id="dataSourceRow"></div>
-<div class="note-box hidden" id="dataSourceNote"></div>
 </div>
 
 <div class="setup-section">
@@ -222,52 +151,47 @@ button.sec:hover{background:#64748b}
 
 <div class="setup-section">
 <h3>网络参数</h3>
-<div class="form-row"><label>节点总数</label><input type="range" id="p-nodeCount" min="10" max="30" value="18"><span class="val" id="v-nodeCount">18</span></div>
-<div class="form-row"><label>平均接收阈值</label><input type="range" id="p-avgTheta" min="10" max="100" value="45"><span class="val" id="v-avgTheta">0.45</span></div>
+<div class="form-row"><label>节点总数</label><input type="range" id="p-nodeCount" min="15" max="40" value="24"><span class="val" id="v-nodeCount">24</span></div>
+<div class="form-row"><label>平均接收阈值</label><input type="range" id="p-avgTheta" min="20" max="100" value="55"><span class="val" id="v-avgTheta">0.55</span></div>
 <div class="form-row"><label>阈值异质性</label><input type="range" id="p-thetaVar" min="0" max="50" value="15"><span class="val" id="v-thetaVar">0.15</span></div>
+<div class="form-row"><label>每轮推送条数K</label><input type="range" id="p-topK" min="1" max="6" value="3"><span class="val" id="v-topK">3</span></div>
+<div class="form-row"><label>最大发布条数/节点</label><input type="range" id="p-maxPost" min="1" max="5" value="3"><span class="val" id="v-maxPost">3</span></div>
 </div>
 
 <div class="setup-section">
 <h3>AMSI 算法特征权重</h3>
-<div class="form-row"><label>w1 内容匹配 (语义互文)</label><input type="range" id="p-w1" min="0" max="100" value="35"><span class="val" id="v-w1">0.35</span></div>
-<div class="form-row"><label>w2 圈层互文 (圈层重叠度)</label><input type="range" id="p-w2" min="0" max="100" value="25"><span class="val" id="v-w2">0.25</span></div>
-<div class="form-row"><label>w3 朋友信号 (弱关系)</label><input type="range" id="p-wFriend" min="0" max="100" value="20"><span class="val" id="v-wFriend">0.20</span></div>
+<div class="form-row"><label>w1 内容匹配</label><input type="range" id="p-w1" min="0" max="100" value="35"><span class="val" id="v-w1">0.35</span></div>
+<div class="form-row"><label>w2 圈层互文</label><input type="range" id="p-w2" min="0" max="100" value="25"><span class="val" id="v-w2">0.25</span></div>
+<div class="form-row"><label>w3 朋友信号</label><input type="range" id="p-wFriend" min="0" max="100" value="20"><span class="val" id="v-wFriend">0.20</span></div>
 <div class="form-row"><label>w4 文本热度</label><input type="range" id="p-wHeat" min="0" max="100" value="12"><span class="val" id="v-wHeat">0.12</span></div>
 <div class="form-row"><label>w5 时间衰减</label><input type="range" id="p-wRecency" min="0" max="100" value="8"><span class="val" id="v-wRecency">0.08</span></div>
-<div class="form-row"><label>文本适配强度</label><input type="range" id="p-adaptStrength" min="0" max="100" value="60"><span class="val" id="v-adaptStrength">0.60</span></div>
 </div>
 
 <div class="setup-section">
 <h3>仿真控制</h3>
-<div class="form-row"><label>每轮 Top-K 推送</label><input type="range" id="p-topK" min="1" max="10" value="4"><span class="val" id="v-topK">4</span></div>
-<div class="form-row"><label>最大时间步</label><input type="range" id="p-maxSteps" min="3" max="20" value="12"><span class="val" id="v-maxSteps">12</span></div>
-<div class="form-row"><label>刺激衰减率</label><input type="range" id="p-decay" min="0" max="50" value="15"><span class="val" id="v-decay">0.15</span></div>
+<div class="form-row"><label>最大时间步</label><input type="range" id="p-maxSteps" min="3" max="20" value="10"><span class="val" id="v-maxSteps">10</span></div>
+<div class="form-row"><label>刺激衰减率</label><input type="range" id="p-decay" min="0" max="50" value="20"><span class="val" id="v-decay">0.20</span></div>
 </div>
 
 <div class="setup-section">
 <h3>LLM 改写引擎</h3>
-<div class="form-row"><label>启用 LLM</label><select id="p-useLLM"><option value="1">开（调 DeepSeek API）</option><option value="0">关（模板改写）</option></select></div>
-<div class="form-row"><label>API 上限</label><input type="number" id="p-maxCalls" value="30" min="0"></div>
+<div class="form-row"><label>启用 LLM</label><select id="p-useLLM"><option value="1">开（DeepSeek API）</option><option value="0">关（模板改写）</option></select></div>
+<div class="form-row"><label>API 上限</label><input type="number" id="p-maxCalls" value="40" min="0"></div>
 </div>
 
 <button class="btn-launch" id="btnLaunch">启动实验</button>
 </div>
 </div>
 
-<!-- ==================== 模拟主界面 ==================== -->
 <div id="simPage">
 <header>
-<h1>AMSI 文本主体传播模拟 <span id="simSubtitle"></span></h1>
+<h1>AMSI 传播模拟 v2 <span id="simSubtitle"></span></h1>
 <div class="controls">
 <div class="exp-ctrl" id="expCtrlW2" style="display:none">
-<label>w2 圈层互文</label>
-<input type="range" id="live-w2" min="0" max="100" value="25">
-<span class="val" id="live-v-w2">0.25</span>
+<label>w2</label><input type="range" id="live-w2" min="0" max="100" value="25"><span class="val" id="live-v-w2">0.25</span>
 </div>
 <div class="exp-ctrl" id="expCtrlAdapt" style="display:none">
-<label>文本适配强度</label>
-<input type="range" id="live-adapt" min="0" max="100" value="60">
-<span class="val" id="live-v-adapt">0.60</span>
+<label>适配强度</label><input type="range" id="live-adapt" min="0" max="100" value="60"><span class="val" id="live-v-adapt">0.60</span>
 </div>
 <button id="btnStart">开始</button>
 <button id="btnStep" class="sec" disabled>单步</button>
@@ -277,48 +201,38 @@ button.sec:hover{background:#64748b}
 </header>
 <div id="canvasWrap">
 <canvas id="network"></canvas>
-<div class="hint"><b>AMSI 传播-生成耦合机制</b><br>圈层从传播中涌现：节点初始无标签，根据互动边+文本相似度动态发现社区<br>算法改变可见性：R_alg = w1*内容+w2*圈层+w3*朋友+w4*热度+w5*时效<br>文本生成反过来改变圈层：改写产生新文本 -> 更新相似度 -> 重新评估社区边界<br><span style="color:#94a3b8">演示模式下圈层可选择预设或自动发现；正式实验将基于真实转发/评论网络，通过Louvain/Leiden社区发现方法识别动态圈层，并以结构指标进行校准。</span></div>
+<div class="hint"><b>v2 传播机制</b><br>每轮算法为每个节点独立推荐Top-K文本<br>节点累积所有推送的刺激，超过阈值后激活<br>激活节点根据自身风格+立场自主改写，可发布多条<br>LLM自行判断：直接转发 / 改写 / 质疑</div>
 <div class="legend">
 <div class="legend-title">节点状态</div>
-<div class="legend-item"><div class="dot" style="background:#475569"></div>未分类（灰色）</div>
-<div class="legend-item"><div class="dot" style="background:#3b82f6"></div>已分类（彩色）</div>
-<div class="legend-item"><div class="dot-border"></div>桥接节点（金色边框）</div>
-<div class="legend-item"><div class="dot" style="background:#fbbf24"></div>已激活（累积中）</div>
+<div class="legend-item"><div class="dot" style="background:#475569"></div>未分类</div>
+<div class="legend-item"><div class="dot" style="background:#3b82f6"></div>已分类</div>
+<div class="legend-item"><div class="dot-border"></div>桥接节点</div>
+<div class="legend-item"><div class="dot" style="background:#fbbf24"></div>累积中</div>
 <div class="legend-item"><div class="dot" style="background:#a855f7"></div>人工节点</div>
-</div>
-<div class="stability-badge" id="stabilityBadge" style="display:none">
-<div class="sb-label">社区稳定度</div>
-<div class="sb-val" id="sb-val">0.00</div>
-<div class="sb-bar"><div class="sb-fill" id="sb-fill" style="width:0%"></div></div>
 </div>
 <div class="overlay-badge" id="netBadge"></div>
 </div>
-<aside class="panel" id="panelAudit">
-<div class="panel-header">算法审计 <span class="ph-sub">R_alg 五维分解</span></div>
+<aside class="panel">
+<div class="panel-header">算法审计 <span class="ph-sub">每节点 Top-K 推送</span></div>
 <div class="pane-content" id="auditContent">
-<div class="empty">点击开始后<br>实时展示每轮 R_alg 算法推送的完整计算过程<br>包括五维贡献分解与跨圈穿透检测</div>
+<div class="empty">点击开始后<br>实时展示每个节点收到的多条推送<br>以及刺激累积和激活判定</div>
 </div>
 </aside>
-<aside class="panel" id="panelText">
-<div class="panel-header">文本演化 <span class="ph-sub">变异链 + 传播耦合</span></div>
+<aside class="panel">
+<div class="panel-header">文本演化 <span class="ph-sub">发布链 + 变异</span></div>
 <div class="pane-content" id="textContent">
 <div class="text-evo-stats" id="textStatsCard" style="display:none">
 <div class="tes-title">变异统计总览</div>
 <div class="tes-row"><span>累计改写次数</span><b id="tes-count">0</b></div>
 <div class="tes-row"><span>平均语义保持率</span><b id="tes-preservation">100.0%</b></div>
 <div class="tes-dim-bars" id="tes-dimBars"></div>
-<div class="coupling-metric">
-<div class="cm-label">传播-生成耦合指标</div>
-<div class="cm-val" id="cm-val">0.00</div>
-<div class="cm-desc" id="cm-desc">文本变异对后续传播路径的影响程度</div>
 </div>
-</div>
-<div id="textChain"><div class="empty">尚无文本变异<br>传播开始后此处展示文本变异链<br>每次改写后显示语义保持率与六维变异</div></div>
+<div id="textChain"><div class="empty">尚无文本变异<br>传播开始后此处展示每次发布的文本<br>以及七维意义变异</div></div>
 </div>
 </aside>
 <div class="statusbar">
 <span>时间步 <b id="s-step">0</b></span>
-<span>已感染 <b id="s-infected">0</b>/<b id="s-total">0</b></span>
+<span>已激活 <b id="s-infected">0</b>/<b id="s-total">0</b></span>
 <span>活跃文本 <b id="s-texts">0</b></span>
 <span>社区数 <b id="s-communities">0</b></span>
 <span>稳定度 <b id="s-stability">0.00</b></span>
@@ -327,131 +241,81 @@ button.sec:hover{background:#64748b}
 </div>
 
 <script>
-/* ============================================================
- *  API 配置
- * ============================================================ */
 var API_KEY = 'sk-27031cc4659c4f0791f3ff3e4e8f228e';
 var API_URL = 'https://api.deepseek.com/chat/completions';
 var MODEL = 'deepseek-chat';
 
-/* ============================================================
- *  传播情境
- * ============================================================ */
 var SCENARIOS = [
-  {
-    id: 'ai-employment',
-    name: 'AI就业冲击',
-    icon: 'robot',
-    bg: '某AI工具发布后，社交媒体出现关于AI是否正在取代人类工作的讨论。科技从业者、劳工群体和政策观察者从不同角度参与这场争论。',
-    seed: 'AI工具最新版本发布后，多个行业开始大规模采用自动化流程，就业市场面临前所未有的冲击。'
-  },
-  {
-    id: 'health-rumor',
-    name: '健康谣言',
-    icon: 'health',
-    bg: '某健康相关谣言在社交媒体平台传播，涉及常见健康误区与伪科学声称，不同群体基于各自经验参与讨论与反驳。',
-    seed: '最新研究发现每天喝八杯水可以彻底清除体内毒素，多家权威机构已确认这一结论。'
-  },
-  {
-    id: 'policy',
-    name: '政策宣传',
-    icon: 'policy',
-    bg: '某新政策发布后的传播与讨论，涉及不同利益相关方的解读与回应，信息在转发中不断被重构与再诠释。',
-    seed: '国务院发布新一轮数字经济发展规划，重点支持人工智能等前沿技术产业化落地。'
-  },
-  {
-    id: 'custom',
-    name: '自定义',
-    icon: 'edit',
-    bg: '自定义传播情境，输入你的种子文本，观察文本如何在网络中变异与扩散。',
-    seed: ''
-  }
+  { id: 'ai-employment', name: 'AI就业冲击', icon: '🤖', bg: '某AI工具发布后，社交媒体出现关于AI是否正在取代人类工作的讨论。', seed: 'AI工具最新版本发布后，多个行业开始大规模采用自动化流程，就业市场面临前所未有的冲击。' },
+  { id: 'health-rumor', name: '健康谣言', icon: '💊', bg: '某健康相关谣言在社交媒体平台传播，涉及常见健康误区与伪科学声称。', seed: '最新研究发现每天喝八杯水可以彻底清除体内毒素，多家权威机构已确认这一结论。' },
+  { id: 'policy', name: '政策宣传', icon: '📋', bg: '某新政策发布后的传播与讨论，涉及不同利益相关方的解读与回应。', seed: '国务院发布新一轮数字经济发展规划，重点支持人工智能等前沿技术产业化落地。' },
+  { id: 'custom', name: '自定义', icon: '✏️', bg: '自定义传播情境，输入你的种子文本。', seed: '' }
 ];
 
-/* ============================================================
- *  实验模式
- * ============================================================ */
 var EXPERIMENT_MODES = [
-  {
-    id: 'form',
-    name: '圈层如何形成',
-    desc: '从无标签网络发现动态圈层',
-    icon: 'circle',
-    defaults: { w2: 25, adaptStrength: 50 }
-  },
-  {
-    id: 'penetrate',
-    name: '算法如何穿透圈层',
-    desc: '调节w2，观察跨圈传播',
-    icon: 'arrow',
-    defaults: { w2: 25, adaptStrength: 50 }
-  },
-  {
-    id: 'evolve',
-    name: '文本如何改变传播',
-    desc: '调节文本适配强度，观察意义变异与网络扩散',
-    icon: 'text',
-    defaults: { w2: 25, adaptStrength: 70 }
-  }
+  { id: 'form', name: '圈层如何形成', desc: '从无标签网络发现动态圈层', icon: '◎', defaults: { w2: 25 } },
+  { id: 'penetrate', name: '算法如何穿透圈层', desc: '调节w2，观察跨圈传播', icon: '→', defaults: { w2: 25 } },
+  { id: 'evolve', name: '文本如何改变传播', desc: '观察文本变异对传播的影响', icon: '✎', defaults: { w2: 25 } }
 ];
 
-/* ============================================================
- *  六维风格签名
- * ============================================================ */
-var DIM_NAMES = ['语义', '框架', '立场', '情感', '风格', '行动指向'];
-var DIM_COLORS = ['#8b5cf6', '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#06b6d4'];
-var DIM_KEYS = ['semantic', 'frame', 'stance', 'emotion', 'style', 'action'];
+/* ============ 七维风格签名 ============ */
+var DIM_NAMES = ['语义', '框架', '立场', '情感', '风格', '篇幅', '行动指向'];
+var DIM_COLORS = ['#8b5cf6', '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#06b6d4', '#ec4899'];
+var DIM_KEYS = ['semantic', 'frame', 'stance', 'emotion', 'style', 'length', 'action'];
 
 var STYLE_DIMS = {
-  semantic:   { name: '语义', values: ['事实陈述', '推测表达', '情感渲染'] },
-  frame:      { name: '框架', values: ['经济框架', '社会框架', '道德框架'] },
-  stance:     { name: '立场', values: ['支持', '中立', '质疑'] },
-  emotion:    { name: '情感', values: ['积极', '中性', '消极'] },
-  style:      { name: '风格', values: ['正式', '非正式', '网络化'] },
-  action:     { name: '行动指向', values: ['信息传递', '行动呼吁', '观点表达'] },
+  semantic: { name: '语义', values: ['事实陈述', '推测表达', '情感渲染'] },
+  frame:    { name: '框架', values: ['经济框架', '社会框架', '道德框架'] },
+  stance:   { name: '立场', values: ['支持', '中立', '质疑'] },
+  emotion:  { name: '情感', values: ['积极', '中性', '消极'] },
+  style:    { name: '风格', values: ['正式', '非正式', '网络化'] },
+  length:   { name: '篇幅', values: ['简短', '适中', '详细'] },
+  action:   { name: '行动指向', values: ['信息传递', '观点表达', '行动呼吁'] }
+};
+
+/* 立场分布：按情境不同采样 */
+var STANCE_DIST = {
+  'ai-employment': [0.25, 0.40, 0.35],
+  'health-rumor':  [0.15, 0.30, 0.55],
+  'policy':        [0.45, 0.35, 0.20],
+  'custom':        [0.33, 0.34, 0.33]
 };
 
 var COMMUNITY_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#a855f7', '#ef4444', '#06b6d4', '#ec4899', '#14b8a6'];
-var COMMUNITY_NAME_TEMPLATES = {
-  '经济框架': '经济视角讨论群',
-  '社会框架': '社会关切社群',
-  '道德框架': '伦理讨论圈',
-  '事实陈述': '事实分析群',
-  '推测表达': '推测讨论圈',
-  '情感渲染': '情感共鸣群',
-  '支持': '支持者社群',
-  '中立': '中立观察圈',
-  '质疑': '质疑讨论群',
-  '积极': '积极传播圈',
-  '中性': '中性讨论群',
-  '消极': '忧虑表达群',
-  '正式': '正式表达圈',
-  '非正式': '非正式讨论群',
-  '网络化': '网络化传播群',
-  '信息传递': '信息传递圈',
-  '行动呼吁': '行动倡导群',
-  '观点表达': '观点表达圈'
+var COMMUNITY_NAMES_BY_FRAME = {
+  '经济框架': '经济视角圈', '社会框架': '社会关切圈', '道德框架': '伦理讨论圈'
 };
 
-function randomSignature() {
+function sampleStance(dist) {
+  var r = Math.random();
+  var cum = 0;
+  for (var i = 0; i < dist.length; i++) {
+    cum += dist[i];
+    if (r < cum) return i;
+  }
+  return dist.length - 1;
+}
+
+function randomSignature(scenarioId) {
   var sig = {};
+  var stanceDist = STANCE_DIST[scenarioId] || STANCE_DIST['custom'];
   for (var k in STYLE_DIMS) {
     var vals = STYLE_DIMS[k].values;
-    var idx = Math.floor(Math.random() * vals.length);
+    var idx;
+    if (k === 'stance') {
+      idx = sampleStance(stanceDist);
+    } else {
+      idx = Math.floor(Math.random() * vals.length);
+    }
     sig[k] = { value: vals[idx], idx: idx, n: vals.length };
   }
   return sig;
 }
 
 function signatureVector(sig) {
-  return [
-    sig.semantic.idx / sig.semantic.n,
-    sig.frame.idx / sig.frame.n,
-    sig.stance.idx / sig.stance.n,
-    sig.emotion.idx / sig.emotion.n,
-    sig.style.idx / sig.style.n,
-    sig.action.idx / sig.action.n
-  ];
+  var v = [];
+  DIM_KEYS.forEach(function(k) { v.push(sig[k].idx / sig[k].n); });
+  return v;
 }
 
 function cosSim(a, b) {
@@ -473,31 +337,15 @@ function mutationVector(srcSig, tgtSig) {
     };
   });
   var dist = 0;
-  for (var i = 0; i < sv.length; i++) { dist += (tv[i]-sv[i])*(tv[i]-sv[i]); }
+  for (var i = 0; i < sv.length; i++) dist += (tv[i]-sv[i])*(tv[i]-sv[i]);
   vec._total = Math.sqrt(dist);
   vec._cosSim = cosSim(sv, tv);
   return vec;
 }
 
-function textSimilarity(a, b) {
-  if (!a || !b) return 0;
-  var la = a.length, lb = b.length;
-  if (la === 0 && lb === 0) return 1;
-  if (la === 0 || lb === 0) return 0;
-  var maxLen = Math.max(la, lb);
-  var common = 0;
-  var setA = {};
-  for (var i = 0; i < a.length; i++) setA[a[i]] = true;
-  for (var j = 0; j < b.length; j++) { if (setA[b[j]]) common++; }
-  return common / maxLen;
-}
-
-/* ============================================================
- *  全局状态
- * ============================================================ */
+/* ============ 全局状态 ============ */
 var selectedScenario = SCENARIOS[0];
 var selectedCircleMode = 'auto';
-var selectedDataSource = 'simulated';
 var selectedExperiment = 'form';
 
 var S = {
@@ -511,23 +359,19 @@ var S = {
   params: {},
   arrows: [],
   mutations: [],
-  prevClusters: [],
   communityStability: 0,
   communityNames: [],
-  edgeSet: {},
-  communityStableCount: 0,
-  discoveryCounter: 0
+  discoveryCounter: 0,
+  netMetrics: null
 };
 
-/* ============================================================
- *  配置页逻辑
- * ============================================================ */
+/* ============ 配置页 ============ */
 function initSetup() {
   var sg = document.getElementById('scenarioGrid');
   SCENARIOS.forEach(function(s) {
     var card = document.createElement('div');
     card.className = 'scenario-card' + (s.id === selectedScenario.id ? ' active' : '');
-    card.innerHTML = '<div class="sc-icon">' + getIcon(s.icon) + '</div><div class="sc-name">' + s.name + '</div><div class="sc-bg">' + s.bg + '</div>';
+    card.innerHTML = '<div class="sc-icon">' + s.icon + '</div><div class="sc-name">' + s.name + '</div><div class="sc-bg">' + s.bg + '</div>';
     card.onclick = function() {
       selectedScenario = s;
       sg.querySelectorAll('.scenario-card').forEach(function(c) { c.classList.remove('active'); });
@@ -539,11 +383,10 @@ function initSetup() {
   document.getElementById('seedText').value = SCENARIOS[0].seed;
 
   var cm = document.getElementById('circleModeRow');
-  var modes = [
-    { id: 'auto', name: '自动发现', desc: '不做预设<br>圈层从传播中涌现' },
-    { id: 'preset', name: '预设圈层', desc: '教学模式<br>按风格签名预分配' }
-  ];
-  modes.forEach(function(m) {
+  [
+    { id: 'auto', name: '自动发现', desc: '圈层从传播中涌现' },
+    { id: 'preset', name: '预设圈层', desc: '按风格签名预分配' }
+  ].forEach(function(m) {
     var el = document.createElement('div');
     el.className = 'mode-opt' + (m.id === selectedCircleMode ? ' active' : '');
     el.innerHTML = '<b>' + m.name + '</b><br>' + m.desc;
@@ -555,69 +398,39 @@ function initSetup() {
     cm.appendChild(el);
   });
 
-  var ds = document.getElementById('dataSourceRow');
-  var sources = [
-    { id: 'simulated', name: '模拟网络', desc: '随机生成<br>小世界网络' },
-    { id: 'real', name: '真实数据校准', desc: '显示接入提示<br>（仅提示）' },
-    { id: 'import', name: '导入传播网络', desc: 'JSON文件导入<br>（演示不可用）' }
-  ];
-  sources.forEach(function(src) {
-    var el = document.createElement('div');
-    el.className = 'mode-opt' + (src.id === selectedDataSource ? ' active' : '');
-    el.innerHTML = '<b>' + src.name + '</b><br>' + src.desc;
-    el.onclick = function() {
-      selectedDataSource = src.id;
-      ds.querySelectorAll('.mode-opt').forEach(function(x) { x.classList.remove('active'); });
-      el.classList.add('active');
-      var note = document.getElementById('dataSourceNote');
-      if (src.id === 'real') {
-        note.classList.remove('hidden');
-        note.innerHTML = '<b>提示：</b>正式实验接入微博转发/评论网络，通过Louvain/Leiden社区发现方法识别动态圈层，并以结构指标进行校准。';
-      } else if (src.id === 'import') {
-        note.classList.remove('hidden');
-        note.innerHTML = '<b>提示：</b>导入功能在完整版中可用。演示模式使用模拟网络。';
-      } else {
-        note.classList.add('hidden');
-      }
-    };
-    ds.appendChild(el);
-  });
-
   var eg = document.getElementById('experimentGrid');
   EXPERIMENT_MODES.forEach(function(e) {
     var card = document.createElement('div');
     card.className = 'experiment-card' + (e.id === selectedExperiment ? ' active' : '');
-    card.innerHTML = '<div class="ex-icon">' + getIcon(e.icon) + '</div><div class="ex-name">' + e.name + '</div><div class="ex-desc">' + e.desc + '</div>';
+    card.innerHTML = '<div class="ex-icon">' + e.icon + '</div><div class="ex-name">' + e.name + '</div><div class="ex-desc">' + e.desc + '</div>';
     card.onclick = function() {
       selectedExperiment = e.id;
       eg.querySelectorAll('.experiment-card').forEach(function(c) { c.classList.remove('active'); });
       card.classList.add('active');
-      document.getElementById('p-w2').value = e.defaults.w2;
-      document.getElementById('p-adaptStrength').value = e.defaults.adaptStrength;
-      updateSliderDisplay('p-w2', 'v-w2', function(v) { return (v/100).toFixed(2); });
-      updateSliderDisplay('p-adaptStrength', 'v-adaptStrength', function(v) { return (v/100).toFixed(2); });
     };
     eg.appendChild(card);
   });
 
-  var bind = function(id, vid, fn) {
-    var el = document.getElementById(id), v = document.getElementById(vid);
-    var upd = function() { v.textContent = fn ? fn(parseFloat(el.value)) : el.value; };
-    el.addEventListener('input', upd);
-    upd();
-  };
-  bind('p-avgTheta','v-avgTheta', function(v) { return (v/100).toFixed(2); });
-  bind('p-thetaVar','v-thetaVar', function(v) { return (v/100).toFixed(2); });
-  bind('p-w1','v-w1', function(v) { return (v/100).toFixed(2); });
-  bind('p-w2','v-w2', function(v) { return (v/100).toFixed(2); });
-  bind('p-wFriend','v-wFriend', function(v) { return (v/100).toFixed(2); });
-  bind('p-wHeat','v-wHeat', function(v) { return (v/100).toFixed(2); });
-  bind('p-wRecency','v-wRecency', function(v) { return (v/100).toFixed(2); });
-  bind('p-adaptStrength','v-adaptStrength', function(v) { return (v/100).toFixed(2); });
-  bind('p-topK','v-topK', null);
-  bind('p-maxSteps','v-maxSteps', null);
-  bind('p-decay','v-decay', function(v) { return (v/100).toFixed(2); });
-  bind('p-nodeCount','v-nodeCount', null);
+  ['p-avgTheta:0.01','p-thetaVar:0.01','p-w1:0.01','p-w2:0.01','p-wFriend:0.01','p-wHeat:0.01','p-wRecency:0.01','p-decay:0.01'].forEach(function(pair) {
+    var parts = pair.split(':');
+    var el = document.getElementById(parts[0]);
+    var vid = 'v-' + parts[0].slice(2);
+    var v = document.getElementById(vid);
+    if (el && v) {
+      var upd = function() { v.textContent = (parseFloat(el.value) * parseFloat(parts[1])).toFixed(2); };
+      el.addEventListener('input', upd);
+      upd();
+    }
+  });
+  ['p-topK','p-maxSteps','p-nodeCount','p-maxPost'].forEach(function(id) {
+    var el = document.getElementById(id);
+    var v = document.getElementById('v-' + id.slice(2));
+    if (el && v) {
+      var upd = function() { v.textContent = el.value; };
+      el.addEventListener('input', upd);
+      upd();
+    }
+  });
 
   document.getElementById('btnLaunch').onclick = function() {
     readParams();
@@ -625,24 +438,6 @@ function initSetup() {
     document.getElementById('simPage').classList.add('visible');
     initSim();
   };
-}
-
-function updateSliderDisplay(id, vid, fn) {
-  var el = document.getElementById(id), v = document.getElementById(vid);
-  if (v) v.textContent = fn ? fn(parseFloat(el.value)) : el.value;
-}
-
-function getIcon(name) {
-  var icons = {
-    robot: '&#129302;',
-    health: '&#128138;',
-    policy: '&#128203;',
-    edit: '&#9999;',
-    circle: '&#9678;',
-    arrow: '&#10148;',
-    text: '&#9998;'
-  };
-  return icons[name] || '&#9679;';
 }
 
 function readParams() {
@@ -655,22 +450,20 @@ function readParams() {
     wFriend: +document.getElementById('p-wFriend').value / 100,
     wHeat: +document.getElementById('p-wHeat').value / 100,
     wRecency: +document.getElementById('p-wRecency').value / 100,
-    adaptStrength: +document.getElementById('p-adaptStrength').value / 100,
     topK: +document.getElementById('p-topK').value,
+    maxPost: +document.getElementById('p-maxPost').value,
     maxSteps: +document.getElementById('p-maxSteps').value,
     decay: +document.getElementById('p-decay').value / 100,
     useLLM: document.getElementById('p-useLLM').value === '1',
     maxCalls: +document.getElementById('p-maxCalls').value,
     seedText: document.getElementById('seedText').value || 'AI技术正在快速取代传统岗位。',
     circleMode: selectedCircleMode,
-    dataSource: selectedDataSource,
-    experiment: selectedExperiment
+    experiment: selectedExperiment,
+    scenarioId: selectedScenario.id
   };
 }
 
-/* ============================================================
- *  Canvas
- * ============================================================ */
+/* ============ Canvas ============ */
 var cv = document.getElementById('network');
 var ctx = cv.getContext('2d');
 var W = 0, H = 0, DPR = 1;
@@ -686,25 +479,19 @@ function resize() {
 }
 window.addEventListener('resize', resize);
 
-/* ============================================================
- *  构建网络 - 不预设圈层
- * ============================================================ */
 function randInt(n) { return Math.floor(Math.random() * n); }
 
+/* ============ 构建网络 ============ */
 function buildNetwork() {
   S.nodes = [];
   S.edges = [];
-  S.edgeSet = {};
-  S.prevClusters = [];
-  S.communityStability = 0;
   S.communityNames = [];
-  S.communityStableCount = 0;
+  S.communityStability = 0;
   S.discoveryCounter = 0;
 
   var N = S.params.nodeCount;
-
   for (var i = 0; i < N; i++) {
-    var theta = Math.max(0.1, Math.min(0.95, S.params.avgTheta + (Math.random()-0.5)*2*S.params.thetaVar));
+    var theta = Math.max(0.15, Math.min(0.95, S.params.avgTheta + (Math.random()-0.5)*2*S.params.thetaVar));
     S.nodes.push({
       id: i,
       x: 0.15 + Math.random() * 0.7,
@@ -713,12 +500,16 @@ function buildNetwork() {
       circle: -1,
       cluster: i,
       state: 'inactive',
-      sig: randomSignature(),
+      sig: randomSignature(S.params.scenarioId),
       theta: theta,
-      stimulus: 0, text: null,
-      parentTextId: null, receiveStep: -1,
-      pulse: 0, isHuman: false, friends: [],
-      bridge: false, colorTransition: 0
+      stimulus: 0,
+      receivedTexts: [],
+      publishedTexts: [],
+      seenTextIds: {},
+      pulse: 0,
+      isHuman: false,
+      friends: [],
+      bridge: false
     });
   }
 
@@ -726,30 +517,24 @@ function buildNetwork() {
   for (var i = 0; i < N; i++) {
     var numConn = 2 + randInt(3);
     for (var j = 0; j < numConn; j++) {
-      var target = randInt(N);
-      if (target !== i) {
-        var key = Math.min(i, target) + '-' + Math.max(i, target);
+      var t = randInt(N);
+      if (t !== i) {
+        var key = Math.min(i, t) + '-' + Math.max(i, t);
         if (!edgeSet[key]) {
           edgeSet[key] = true;
-          S.edges.push({ from: i, to: target, type: 'follow', fromCircle: -1, toCircle: -1 });
+          S.edges.push({ from: i, to: t, type: 'follow', fromCircle: -1, toCircle: -1 });
         }
       }
     }
   }
-
   var adj = [];
   for (var i = 0; i < N; i++) adj.push([]);
-  for (var e of S.edges) {
-    adj[e.from].push(e.to);
-    adj[e.to].push(e.from);
-  }
+  for (var e of S.edges) { adj[e.from].push(e.to); adj[e.to].push(e.from); }
   S.nodes.forEach(function(n, i) { n.friends = adj[i]; });
 
   if (S.params.circleMode === 'preset') {
     S.nodes.forEach(function(n) {
-      if (n.sig.frame.idx === 0) n.circle = 0;
-      else if (n.sig.frame.idx === 1) n.circle = 1;
-      else n.circle = 2;
+      n.circle = n.sig.frame.idx;
       n.cluster = n.circle;
     });
     S.communityNames = ['经济视角圈', '社会关切圈', '伦理讨论圈'];
@@ -759,127 +544,68 @@ function buildNetwork() {
   computeNetMetrics();
 }
 
-/* ============================================================
- *  社区发现 - 标签传播算法
- * ============================================================ */
+/* ============ 社区发现 ============ */
 function discoverCommunities() {
   var nodes = S.nodes.filter(function(n) { return !n.isHuman; });
-  if (nodes.length === 0) return;
-
+  if (!nodes.length) return;
   var prevLabels = nodes.map(function(n) { return n.cluster; });
-
   var order = nodes.slice().sort(function() { return Math.random() - 0.5; });
 
   for (var node of order) {
     var labelWeights = {};
-    var neighbors = [];
-
     for (var e of S.edges) {
-      if (e.from === node.id) neighbors.push({ id: e.to, weight: e.type === 'repost' ? 1.5 : 1 });
-      else if (e.to === node.id) neighbors.push({ id: e.from, weight: e.type === 'repost' ? 1.5 : 1 });
+      var otherId = e.from === node.id ? e.to : (e.to === node.id ? e.from : -1);
+      if (otherId < 0) continue;
+      var other = S.nodes[otherId];
+      if (!other) continue;
+      var weight = 0.5;
+      if (node.text && other.text) weight += textSimilarity(node.text, other.text) * 2;
+      if (node.sig && other.sig) weight += cosSim(signatureVector(node.sig), signatureVector(other.sig));
+      if (!labelWeights[other.cluster]) labelWeights[other.cluster] = 0;
+      labelWeights[other.cluster] += weight;
     }
-
-    for (var nb of neighbors) {
-      var neighbor = S.nodes[nb.id];
-      if (!neighbor) continue;
-      var weight = nb.weight;
-      if (node.text && neighbor.text) {
-        weight += textSimilarity(node.text, neighbor.text) * 2;
-      }
-      if (node.sig && neighbor.sig) {
-        weight += cosSim(signatureVector(node.sig), signatureVector(neighbor.sig));
-      }
-      var label = neighbor.cluster;
-      if (label === undefined) continue;
-      if (!labelWeights[label]) labelWeights[label] = 0;
-      labelWeights[label] += weight;
-    }
-
-    if (node.friends && node.friends.length > 0) {
-      for (var fid of node.friends) {
-        var friend = S.nodes[fid];
-        if (!friend) continue;
-        var label = friend.cluster;
-        if (label === undefined) continue;
-        if (!labelWeights[label]) labelWeights[label] = 0;
-        labelWeights[label] += 0.5;
-      }
-    }
-
-    var bestLabel = node.cluster;
-    var bestWeight = 0;
-    for (var label in labelWeights) {
-      if (labelWeights[label] > bestWeight) {
-        bestWeight = labelWeights[label];
-        bestLabel = parseInt(label);
-      }
+    var bestLabel = node.cluster, bestWeight = 0;
+    for (var l in labelWeights) {
+      if (labelWeights[l] > bestWeight) { bestWeight = labelWeights[l]; bestLabel = parseInt(l); }
     }
     node.cluster = bestLabel;
   }
 
   var changed = 0;
-  nodes.forEach(function(n, i) {
-    if (n.cluster !== prevLabels[i]) changed++;
-  });
-  S.communityStability = 1 - (changed / nodes.length);
+  nodes.forEach(function(n, i) { if (n.cluster !== prevLabels[i]) changed++; });
+  S.communityStability = 1 - changed / nodes.length;
 
-  var uniqueClusters = [];
-  nodes.forEach(function(n) {
-    if (uniqueClusters.indexOf(n.cluster) === -1) uniqueClusters.push(n.cluster);
-  });
-  uniqueClusters.sort(function(a, b) { return a - b; });
+  var unique = [];
+  nodes.forEach(function(n) { if (unique.indexOf(n.cluster) === -1) unique.push(n.cluster); });
+  unique.sort(function(a, b) { return a - b; });
+  var map = {};
+  unique.forEach(function(c, i) { map[c] = i; });
+  nodes.forEach(function(n) { n.circle = map[n.cluster]; });
 
-  var clusterMap = {};
-  uniqueClusters.forEach(function(c, i) { clusterMap[c] = i; });
-  nodes.forEach(function(n) { n.circle = clusterMap[n.cluster]; });
-
-  if (S.communityStability > 0.8 && uniqueClusters.length >= 3 && S.communityNames.length === 0) {
+  if (S.communityStability > 0.75 && unique.length >= 2 && S.communityNames.length === 0) {
     nameCommunities(nodes);
-    S.communityStableCount++;
   }
-
-  if (S.communityStability > 0.5) {
-    S.nodes.forEach(function(n) {
-      if (n.colorTransition < 1) n.colorTransition = Math.min(1, n.colorTransition + 0.1);
-    });
-  }
-
   updateBridgeNodes();
-  S.prevClusters = nodes.map(function(n) { return n.cluster; });
-
-  document.getElementById('s-communities').textContent = uniqueClusters.length;
+  document.getElementById('s-communities').textContent = unique.length;
   document.getElementById('s-stability').textContent = S.communityStability.toFixed(2);
-  var sb = document.getElementById('stabilityBadge');
-  if (sb) {
-    sb.style.display = 'block';
-    document.getElementById('sb-val').textContent = S.communityStability.toFixed(2);
-    document.getElementById('sb-fill').style.width = (S.communityStability * 100) + '%';
-  }
 }
 
 function nameCommunities(nodes) {
-  var communities = {};
+  var comms = {};
   nodes.forEach(function(n) {
-    if (!communities[n.circle]) communities[n.circle] = { sigs: [], texts: [] };
-    communities[n.circle].sigs.push(n.sig);
-    if (n.text) communities[n.circle].texts.push(n.text);
+    if (!comms[n.circle]) comms[n.circle] = [];
+    comms[n.circle].push(n.sig);
   });
-
   S.communityNames = [];
-  for (var c in communities) {
-    var comm = communities[c];
+  for (var c in comms) {
     var frameCounts = {};
-    comm.sigs.forEach(function(sig) {
+    comms[c].forEach(function(sig) {
       var fv = sig.frame.value;
-      if (!frameCounts[fv]) frameCounts[fv] = 0;
-      frameCounts[fv]++;
+      frameCounts[fv] = (frameCounts[fv] || 0) + 1;
     });
-    var bestFrame = '', bestCount = 0;
-    for (var f in frameCounts) {
-      if (frameCounts[f] > bestCount) { bestCount = frameCounts[f]; bestFrame = f; }
-    }
-    var name = COMMUNITY_NAME_TEMPLATES[bestFrame] || ('社区' + (parseInt(c)+1));
-    S.communityNames[parseInt(c)] = name;
+    var best = '', bestCount = 0;
+    for (var f in frameCounts) if (frameCounts[f] > bestCount) { bestCount = frameCounts[f]; best = f; }
+    S.communityNames[parseInt(c)] = COMMUNITY_NAMES_BY_FRAME[best] || ('社区' + (parseInt(c) + 1));
   }
 }
 
@@ -887,89 +613,55 @@ function updateBridgeNodes() {
   S.nodes.forEach(function(n) { n.bridge = false; });
   S.edges.forEach(function(e) {
     var from = S.nodes[e.from], to = S.nodes[e.to];
-    if (!from || !to) return;
-    if (from.circle !== -1 && to.circle !== -1 && from.circle !== to.circle) {
-      from.bridge = true;
-      to.bridge = true;
+    if (from && to && from.circle !== -1 && to.circle !== -1 && from.circle !== to.circle) {
+      from.bridge = true; to.bridge = true;
     }
   });
 }
 
-/* ============================================================
- *  力导向布局
- * ============================================================ */
+/* ============ 力导向 ============ */
 function applyForces() {
-  var nodes = S.nodes;
-  var n = nodes.length;
-  if (n === 0) return;
-
-  for (var i = 0; i < n; i++) {
-    nodes[i].fx = 0;
-    nodes[i].fy = 0;
-  }
-
+  var nodes = S.nodes, n = nodes.length;
+  if (!n) return;
+  for (var i = 0; i < n; i++) { nodes[i].fx = 0; nodes[i].fy = 0; }
   var kRep = 0.0006;
   for (var i = 0; i < n; i++) {
-    for (var j = i+1; j < n; j++) {
-      var dx = nodes[j].x - nodes[i].x;
-      var dy = nodes[j].y - nodes[i].y;
+    for (var j = i + 1; j < n; j++) {
+      var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
       var dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
-      var force = kRep / (dist * dist);
-      var fx = (dx / dist) * force;
-      var fy = (dy / dist) * force;
-      nodes[i].fx -= fx; nodes[i].fy -= fy;
-      nodes[j].fx += fx; nodes[j].fy += fy;
+      var f = kRep / (dist * dist);
+      nodes[i].fx -= (dx/dist)*f; nodes[i].fy -= (dy/dist)*f;
+      nodes[j].fx += (dx/dist)*f; nodes[j].fy += (dy/dist)*f;
     }
   }
-
   var kSpring = 0.003;
   for (var e of S.edges) {
     var a = nodes[e.from], b = nodes[e.to];
     if (!a || !b) continue;
     var dx = b.x - a.x, dy = b.y - a.y;
     var dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
-    var force = kSpring * dist;
-    var fx = (dx / dist) * force;
-    var fy = (dy / dist) * force;
-    a.fx += fx; a.fy += fy;
-    b.fx -= fx; b.fy -= fy;
+    var f = kSpring * dist;
+    a.fx += (dx/dist)*f; a.fy += (dy/dist)*f;
+    b.fx -= (dx/dist)*f; b.fy -= (dy/dist)*f;
   }
-
   var kCluster = 0.0004;
   for (var i = 0; i < n; i++) {
-    for (var j = i+1; j < n; j++) {
+    for (var j = i + 1; j < n; j++) {
       if (nodes[i].circle !== -1 && nodes[i].circle === nodes[j].circle) {
-        var dx = nodes[j].x - nodes[i].x;
-        var dy = nodes[j].y - nodes[i].y;
+        var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
         var dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
         if (dist > 0.12) {
-          var force = kCluster;
-          var fx = (dx / dist) * force;
-          var fy = (dy / dist) * force;
-          nodes[i].fx += fx; nodes[i].fy += fy;
-          nodes[j].fx -= fx; nodes[j].fy -= fy;
-        }
-      } else if (nodes[i].circle !== -1 && nodes[j].circle !== -1 && nodes[i].circle !== nodes[j].circle) {
-        var dx = nodes[j].x - nodes[i].x;
-        var dy = nodes[j].y - nodes[i].y;
-        var dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
-        if (dist < 0.22) {
-          var force = 0.0003 / (dist + 0.02);
-          var fx = (dx / dist) * force;
-          var fy = (dy / dist) * force;
-          nodes[i].fx -= fx; nodes[i].fy -= fy;
-          nodes[j].fx += fx; nodes[j].fy += fy;
+          nodes[i].fx += (dx/dist)*kCluster; nodes[i].fy += (dy/dist)*kCluster;
+          nodes[j].fx -= (dx/dist)*kCluster; nodes[j].fy -= (dy/dist)*kCluster;
         }
       }
     }
   }
-
   var kCenter = 0.0008;
   for (var i = 0; i < n; i++) {
     nodes[i].fx += (0.5 - nodes[i].x) * kCenter;
     nodes[i].fy += (0.5 - nodes[i].y) * kCenter;
   }
-
   for (var i = 0; i < n; i++) {
     var node = nodes[i];
     node.vx = (node.vx + node.fx) * 0.85;
@@ -979,8 +671,7 @@ function applyForces() {
     if (node.vx < -maxV) node.vx = -maxV;
     if (node.vy > maxV) node.vy = maxV;
     if (node.vy < -maxV) node.vy = -maxV;
-    node.x += node.vx;
-    node.y += node.vy;
+    node.x += node.vx; node.y += node.vy;
     if (node.x < 0.04) node.x = 0.04;
     if (node.x > 0.96) node.x = 0.96;
     if (node.y < 0.04) node.y = 0.04;
@@ -988,30 +679,24 @@ function applyForces() {
   }
 }
 
-/* ============================================================
- *  绘制
- * ============================================================ */
+/* ============ 绘制 ============ */
 function nodeColor(node) {
   if (node.circle === -1) return '#475569';
-  var color = COMMUNITY_COLORS[node.circle % COMMUNITY_COLORS.length];
-  if (S.communityStability > 0.5) return color;
-  return color + '99';
+  return COMMUNITY_COLORS[node.circle % COMMUNITY_COLORS.length];
 }
 
 function draw() {
   ctx.clearRect(0, 0, W, H);
-
   for (var e of S.edges) {
     var s = S.nodes[e.from], t = S.nodes[e.to];
     if (!s || !t) continue;
-    var sx = s.x * W, sy = s.y * H, tx = t.x * W, ty = t.y * H;
     var edgeColor;
     if (e.fromCircle !== -1 && e.toCircle !== -1 && e.fromCircle !== e.toCircle) {
       edgeColor = 'rgba(251,191,36,0.25)';
       ctx.lineWidth = 1.5;
-      ctx.setLineDash([4,3]);
+      ctx.setLineDash([4, 3]);
     } else if (e.type === 'repost') {
-      edgeColor = 'rgba(16,185,129,0.15)';
+      edgeColor = 'rgba(16,185,129,0.2)';
       ctx.lineWidth = 1;
       ctx.setLineDash([]);
     } else {
@@ -1021,8 +706,8 @@ function draw() {
     }
     ctx.strokeStyle = edgeColor;
     ctx.beginPath();
-    ctx.moveTo(sx, sy);
-    ctx.lineTo(tx, ty);
+    ctx.moveTo(s.x*W, s.y*H);
+    ctx.lineTo(t.x*W, t.y*H);
     ctx.stroke();
     ctx.setLineDash([]);
   }
@@ -1030,80 +715,73 @@ function draw() {
   for (var a of S.arrows) {
     var src = S.nodes[a.fromId], tgt = S.nodes[a.toId];
     if (!src || !tgt) continue;
-    var mx = (src.x+tgt.x)/2, my = Math.min(src.y,tgt.y)-0.04;
+    var mx = (src.x + tgt.x) / 2, my = Math.min(src.y, tgt.y) - 0.04;
     var bcx = (1-a.t)*(1-a.t)*src.x + 2*(1-a.t)*a.t*mx + a.t*a.t*tgt.x;
     var bcy = (1-a.t)*(1-a.t)*src.y + 2*(1-a.t)*a.t*my + a.t*a.t*tgt.y;
     ctx.beginPath();
     ctx.moveTo(src.x*W, src.y*H);
     ctx.quadraticCurveTo(mx*W, my*H, bcx*W, bcy*H);
     ctx.strokeStyle = a.color;
-    ctx.lineWidth = a.penetration ? 3 : 2;
-    ctx.globalAlpha = (1-a.t)*0.85;
+    ctx.lineWidth = a.penetration ? 2.5 : 1.8;
+    ctx.globalAlpha = (1 - a.t) * 0.85;
     ctx.stroke();
     ctx.globalAlpha = 1;
-    if (a.penetration) {
-      ctx.beginPath();
-      ctx.arc(bcx*W, bcy*H, 4, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(251,191,36,' + ((1-a.t)*0.6) + ')';
-      ctx.fill();
-    }
   }
 
   for (var n of S.nodes) {
     var x = n.x*W, y = n.y*H;
-    var baseR = n.isHuman ? 16 : 12;
-
+    var baseR = n.isHuman ? 16 : 11;
     if (n.pulse > 0) {
       ctx.beginPath();
-      ctx.arc(x, y, baseR+12*n.pulse, 0, Math.PI*2);
-      var pc = n.isHuman ? '168,85,247' : '251,191,36';
-      ctx.fillStyle = 'rgba(' + pc + ',' + (n.pulse*0.35) + ')';
+      ctx.arc(x, y, baseR + 12*n.pulse, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(251,191,36,' + (n.pulse*0.35) + ')';
       ctx.fill();
     }
-
     ctx.beginPath();
     ctx.arc(x, y, baseR, 0, Math.PI*2);
     ctx.fillStyle = nodeColor(n);
     ctx.fill();
-
-    if (n.bridge) {
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 3;
-    } else {
-      ctx.strokeStyle = 'rgba(255,255,255,.9)';
-      ctx.lineWidth = 2;
-    }
+    if (n.bridge) { ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3; }
+    else { ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2; }
     ctx.stroke();
 
     ctx.fillStyle = '#fff';
     ctx.font = '600 10px -apple-system,sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(n.isHuman ? 'H' : String(n.id+1), x, y);
+    ctx.fillText(n.isHuman ? 'H' : String(n.id + 1), x, y);
+
+    /* 显示已发布文本数 */
+    if (n.publishedTexts.length > 0) {
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(x + baseR - 2, y - baseR + 2, 6, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '700 8px -apple-system,sans-serif';
+      ctx.fillText(String(n.publishedTexts.length), x + baseR - 2, y - baseR + 2);
+    }
 
     if (n.state === 'active' && n.stimulus > 0.05) {
       var ratio = Math.min(1, n.stimulus / n.theta);
       ctx.beginPath();
-      ctx.arc(x, y, baseR+3, -Math.PI/2, -Math.PI/2 + ratio*Math.PI*2);
-      ctx.strokeStyle = ratio>0.7 ? '#fbbf24' : '#94a3b8';
-      ctx.lineWidth = 2.5;
+      ctx.arc(x, y, baseR + 3, -Math.PI/2, -Math.PI/2 + ratio*Math.PI*2);
+      ctx.strokeStyle = ratio > 0.7 ? '#fbbf24' : '#94a3b8';
+      ctx.lineWidth = 2;
       ctx.stroke();
     }
   }
 
   if (S.communityStability > 0.3 && S.communityNames.length > 0) {
-    var commCenters = {};
-    var commCounts = {};
+    var centers = {}, counts = {};
     for (var n of S.nodes) {
       if (n.circle === -1 || n.isHuman) continue;
-      if (!commCenters[n.circle]) { commCenters[n.circle] = {x:0, y:0}; commCounts[n.circle] = 0; }
-      commCenters[n.circle].x += n.x;
-      commCenters[n.circle].y += n.y;
-      commCounts[n.circle]++;
+      if (!centers[n.circle]) { centers[n.circle] = {x:0, y:0}; counts[n.circle] = 0; }
+      centers[n.circle].x += n.x; centers[n.circle].y += n.y; counts[n.circle]++;
     }
-    for (var c in commCenters) {
-      var cx = commCenters[c].x / commCounts[c];
-      var cy = commCenters[c].y / commCounts[c];
+    for (var c in centers) {
+      var cx = centers[c].x / counts[c];
+      var cy = centers[c].y / counts[c];
       var name = S.communityNames[parseInt(c)] || ('社区' + (parseInt(c)+1));
       ctx.fillStyle = COMMUNITY_COLORS[parseInt(c) % COMMUNITY_COLORS.length] + 'cc';
       ctx.font = '600 11px -apple-system,sans-serif';
@@ -1118,27 +796,37 @@ function startAnimation() {
   if (animFrameId) cancelAnimationFrame(animFrameId);
   function tick() {
     applyForces();
-    var needArrow = false;
-    S.arrows.forEach(function(a) { a.t += 0.04; if (a.t < 1) needArrow = true; });
+    S.arrows.forEach(function(a) { a.t += 0.04; });
     S.arrows = S.arrows.filter(function(a) { return a.t < 1; });
-    S.nodes.forEach(function(n) { if (n.pulse > 0) { n.pulse = Math.max(0, n.pulse-0.04); } });
+    S.nodes.forEach(function(n) { if (n.pulse > 0) n.pulse = Math.max(0, n.pulse - 0.04); });
     draw();
     animFrameId = requestAnimationFrame(tick);
   }
   tick();
 }
 
-/* ============================================================
- *  AMSI 算法推荐
- * ============================================================ */
+/* ============ 文本相似度 ============ */
+function textSimilarity(a, b) {
+  if (!a || !b) return 0;
+  var la = a.length, lb = b.length;
+  if (la === 0 && lb === 0) return 1;
+  if (la === 0 || lb === 0) return 0;
+  var setA = {};
+  for (var i = 0; i < a.length; i++) setA[a[i]] = true;
+  var common = 0;
+  for (var j = 0; j < b.length; j++) if (setA[b[j]]) common++;
+  return common / Math.max(la, lb);
+}
+
+/* ============ AMSI 计算 ============ */
 function styleSim(textSig, nodeSig) {
   return Math.max(0, cosSim(signatureVector(textSig), signatureVector(nodeSig)));
 }
 
-function circleOverlap(textOriginCircle, nodeCircle) {
-  if (textOriginCircle === -1 || nodeCircle === -1) return 0.1;
-  if (textOriginCircle === nodeCircle) return 1;
-  var d = Math.abs(textOriginCircle - nodeCircle);
+function circleOverlap(textOrigin, nodeCircle) {
+  if (textOrigin === -1 || nodeCircle === -1) return 0.1;
+  if (textOrigin === nodeCircle) return 1;
+  var d = Math.abs(textOrigin - nodeCircle);
   return d === 1 ? 0.35 : 0.15;
 }
 
@@ -1148,8 +836,11 @@ function friendSignal(text, node) {
   node.friends.forEach(function(fid) {
     var f = S.nodes[fid];
     if (!f) return;
-    if (f.state === 'infected' && f.text === text.text) c++;
-    else if (f.state === 'infected' && f.text && text.originId && f.parentTextId === text.originId) c++;
+    if (f.publishedTexts && text.originId) {
+      for (var pt of f.publishedTexts) {
+        if (pt.parentTextId === text.originId || pt.originId === text.originId) { c++; break; }
+      }
+    }
   });
   return c / Math.max(1, node.friends.length);
 }
@@ -1161,7 +852,6 @@ function computeRalg(text, node) {
   var fSig = friendSignal(text, node);
   var heat = text.heat;
   var recency = Math.max(0, 1 - (S.timeStep - text.step) * 0.15);
-
   var contrib = {
     sim: p.w1 * sim,
     overlap: p.w2 * overlap,
@@ -1170,19 +860,31 @@ function computeRalg(text, node) {
     recency: p.wRecency * recency
   };
   var total = contrib.sim + contrib.overlap + contrib.friend + contrib.heat + contrib.recency;
-  return { total: total, contrib: contrib, raw: { sim: sim, overlap: overlap, fSig: fSig, heat: heat, recency: recency } };
+  return { total: total, contrib: contrib };
 }
 
-/* ============================================================
- *  LLM 改写
- * ============================================================ */
-async function generateText(srcText, node) {
-  if (!S.params.useLLM || S.apiCalls >= S.params.maxCalls) return templateRewrite(srcText, node);
+/* ============ LLM 改写 ============ */
+async function generateText(srcText, node, pushes) {
+  if (!S.params.useLLM || S.apiCalls >= S.params.maxCalls) return templateRewrite(srcText, node, pushes);
   S.apiCalls++;
   updateStatus();
+
   var sig = node.sig;
-  var desc = '语义倾向：' + sig.semantic.value + '；框架：' + sig.frame.value + '；立场：' + sig.stance.value + '；情感：' + sig.emotion.value + '；语言风格：' + sig.style.value + '；行动指向：' + sig.action.value;
-  var temp = 0.3 + S.params.adaptStrength * 0.6;
+  var sigDesc = '语义倾向：' + sig.semantic.value + '；框架：' + sig.frame.value +
+                '；立场：' + sig.stance.value + '；情感：' + sig.emotion.value +
+                '；语言风格：' + sig.style.value + '；篇幅偏好：' + sig.length.value +
+                '；行动指向：' + sig.action.value;
+
+  /* 把节点收到的多条推送作为语境 */
+  var contextTexts = pushes.slice(0, 3).map(function(p, i) {
+    return '[' + (i+1) + '] ' + p.text.text.slice(0, 80);
+  }).join('\n');
+
+  var lengthHint = sig.length.value === '简短' ? '30字以内' :
+                   sig.length.value === '详细' ? '80-120字' : '40-70字';
+
+  var temp = 0.7;
+
   try {
     var resp = await fetch(API_URL, {
       method: 'POST',
@@ -1190,217 +892,282 @@ async function generateText(srcText, node) {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: 'system', content: '你是一个文本生成节点，你的六维风格签名为【' + desc + '】。请将用户提供的文本改写为符合你风格签名的版本：保留不可变要素（事实主张、情感极性、信源标记），调整可变要素（词汇选择、句式长度、语气强度、表达框架）。直接输出改写后的文本，60字以内，不要任何前缀解释。' },
-          { role: 'user', content: srcText }
+          { role: 'system',
+            content: '你是一个真实的社交媒体用户，你的七维风格签名是【' + sigDesc + '】。\n' +
+              '你刚刚在信息流中刷到了以下内容：\n' + contextTexts + '\n\n' +
+              '请你根据自己的风格、立场和篇幅偏好，自主决定如何回应。\n' +
+              '你可以选择：\n' +
+              '1. 直接转发（如果立场一致且没有补充）\n' +
+              '2. 改写后转发（调整表达方式以符合你的风格，可补充观点）\n' +
+              '3. 质疑式回应（如果你的立场与源文本不同，可以表达质疑、保留意见或反例）\n\n' +
+              '要求：\n' +
+              '- 保留核心事实，但可以根据你的立场调整语气强度\n' +
+              '- 篇幅控制在' + lengthHint + '\n' +
+              '- 直接输出你发布的文本，不要前缀解释，不要加"我作为"这种说明\n' +
+              '- 不要写"以上"、"转发"这样的说明性文字\n' +
+              '- 用自然语言，像真实的社交平台发帖' },
+          { role: 'user', content: '请输出你发布的文本。' }
         ],
-        temperature: temp, top_p: 0.9, max_tokens: 150
+        temperature: temp, top_p: 0.9, max_tokens: 250
       })
     });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     var d = await resp.json();
     return (d.choices[0].message.content || '').trim();
   } catch(e) {
-    console.warn('LLM fail:', e.message);
-    return templateRewrite(srcText, node);
+    return templateRewrite(srcText, node, pushes);
   }
 }
 
-function templateRewrite(text, node) {
+function templateRewrite(srcText, node, pushes) {
   var sig = node.sig;
-  var strength = S.params.adaptStrength;
-  var prefixes = { '积极': ['好消息！', '值得关注，'], '中性': ['', '据报道，'], '消极': ['令人担忧，', '警惕！'] };
-  var sufs = { '支持': '——应积极应对。', '中立': '——值得持续观察。', '质疑': '——但风险是否可控？' };
-  var pfx = (prefixes[sig.emotion.value] || [''])[randInt(2)] || '';
-  var sfx = sufs[sig.stance.value] || '';
-  if (strength < 0.3) return text.slice(0, 50);
-  if (strength < 0.6) return pfx + text.slice(0, 40);
-  return pfx + text.slice(0, 35) + sfx;
+  var stance = sig.stance.value;
+  var length = sig.length.value;
+  var maxLen = length === '简短' ? 30 : (length === '详细' ? 100 : 60);
+
+  /* 判断节点立场与源文本立场：粗略地按立场枚举 */
+  var srcStanceIdx = 1;
+  if (pushes && pushes[0] && pushes[0].text && pushes[0].text.style) {
+    srcStanceIdx = pushes[0].text.style.stance.idx;
+  }
+  var myStanceIdx = sig.stance.idx;
+
+  var prefix = '';
+  var suffix = '';
+  if (myStanceIdx === srcStanceIdx) {
+    /* 立场一致 → 直接转发或轻度改写 */
+    var p = sig.emotion.value === '积极' ? '支持！' :
+            sig.emotion.value === '消极' ? '值得警惕。' : '';
+    prefix = p;
+  } else if (myStanceIdx > srcStanceIdx) {
+    /* 我的立场更质疑 */
+    prefix = '这条说法值得商榷。';
+    suffix = '我们不能只看一面。';
+  } else {
+    /* 我的立场更支持 */
+    prefix = '其实可以更积极看待。';
+    suffix = '技术进步总会有适应期。';
+  }
+
+  var core = srcText.slice(0, Math.max(10, maxLen - prefix.length - suffix.length - 4));
+  return prefix + core + suffix;
 }
 
-/* ============================================================
- *  单步传播
- * ============================================================ */
+/* ============ 单步传播 ============ */
 async function runOneStep() {
   S.timeStep++;
   document.getElementById('s-step').textContent = S.timeStep;
 
   S.nodes.forEach(function(n) {
-    if (n.state !== 'infected') { n.stimulus *= (1-S.params.decay); if (n.stimulus<0.01) n.stimulus=0; }
+    if (n.state !== 'infected') {
+      n.stimulus *= (1 - S.params.decay);
+      if (n.stimulus < 0.01) n.stimulus = 0;
+    }
   });
 
-  S.discoveryCounter++;
-  if (S.discoveryCounter >= 2) {
+  if (S.discoveryCounter++ >= 2) {
     S.discoveryCounter = 0;
     discoverCommunities();
     computeNetMetrics();
   }
 
-  var candidates = S.nodes.filter(function(n) { return n.state !== 'infected'; });
+  var candidates = S.nodes.filter(function(n) { return !n.isHuman; });
   if (!candidates.length || !S.activeTexts.length) return false;
 
-  var scored = candidates.map(function(n) {
-    var best = null, bestCalc = null;
-    S.activeTexts.forEach(function(t) {
-      var c = computeRalg(t, n);
-      if (!bestCalc || c.total > bestCalc.total) { best = t; bestCalc = c; }
+  /* 每个节点独立接收 Top-K 推送（去重：已处理过的文本不再推送） */
+  var allPushes = [];
+  candidates.forEach(function(node) {
+    var candidates2 = S.activeTexts.filter(function(t) {
+      return !node.seenTextIds[t.originId] || t.originId === 'seed';
     });
-    return { node: n, text: best, calc: bestCalc };
-  });
-  scored.sort(function(a, b) { return b.calc.total - a.calc.total; });
-  var topK = scored.slice(0, S.params.topK);
-
-  var audit = {
-    step: S.timeStep,
-    entries: topK.map(function(x) {
-      return {
-        node: x.node, text: x.text, calc: x.calc,
-        projected: x.node.stimulus + x.calc.total,
-        theta: x.node.theta,
-        penetration: x.text.originCircle !== -1 && x.node.circle !== -1 && x.text.originCircle !== x.node.circle
-      };
-    })
-  };
-  renderAudit(audit);
-
-  topK.forEach(function(x) {
-    var isPenetration = x.text.originCircle !== -1 && x.node.circle !== -1 && x.text.originCircle !== x.node.circle;
-    var arrowColor = isPenetration ? '#fbbf24' : (x.node.circle !== -1 ? COMMUNITY_COLORS[x.node.circle % COMMUNITY_COLORS.length] : '#3b82f6');
-    S.arrows.push({ fromId: x.text.originNode.id, toId: x.node.id, t: 0, color: arrowColor, penetration: isPenetration });
-    x.node.pulse = 1;
+    if (!candidates2.length) return;
+    var scored = candidates2.map(function(t) {
+      var calc = computeRalg(t, node);
+      return { text: t, calc: calc, score: calc.total };
+    });
+    scored.sort(function(a, b) { return b.score - a.score; });
+    var topK = scored.slice(0, S.params.topK);
+    allPushes.push({ node: node, pushes: topK });
   });
 
-  await sleep(600);
+  /* 累积刺激 + 检查阈值 */
+  var activated = [];
+  allPushes.forEach(function(item) {
+    var node = item.node;
+    var pushes = item.pushes;
+    if (!pushes.length) return;
 
-  for (var x of topK) {
-    var node = x.node, calc = x.calc;
-    node.stimulus += calc.total;
-    var thresholdMet = node.stimulus >= node.theta;
+    var dominant = pushes[0];
+    var otherSum = 0;
+    for (var i = 1; i < pushes.length; i++) otherSum += pushes[i].calc.total;
+    var deltaStim = dominant.calc.total + otherSum * 0.3;
+    node.stimulus += deltaStim;
 
-    if (thresholdMet) {
-      var srcSig = x.text.style;
-      var newText = await generateText(x.text.text, node);
-      node.state = 'infected';
-      node.text = newText;
-      node.parentTextId = x.text.originId;
-      node.receiveStep = S.timeStep;
-      node.stimulus = 0;
+    /* 记录收到过的文本 */
+    pushes.forEach(function(p) { node.seenTextIds[p.text.originId] = true; });
+
+    if (node.stimulus >= node.theta) {
+      activated.push({ node: node, dominant: dominant, pushes: pushes, deltaStim: deltaStim });
+    } else {
+      if (node.state === 'inactive') node.state = 'active';
+    }
+  });
+
+  /* 渲染审计 */
+  renderAudit({ step: S.timeStep, entries: activated.map(function(a) {
+    return {
+      node: a.node,
+      dominant: a.dominant,
+      pushes: a.pushes,
+      deltaStim: a.deltaStim
+    };
+  })});
+
+  /* 箭头可视化 */
+  activated.forEach(function(a) {
+    a.pushes.forEach(function(p) {
+      var isPen = p.text.originCircle !== -1 && a.node.circle !== -1 && p.text.originCircle !== a.node.circle;
+      var color = isPen ? '#fbbf24' : (a.node.circle !== -1 ? COMMUNITY_COLORS[a.node.circle % COMMUNITY_COLORS.length] : '#3b82f6');
+      S.arrows.push({ fromId: p.text.originNode.id, toId: a.node.id, t: 0, color: color, penetration: isPen });
+    });
+    a.node.pulse = 1;
+  });
+
+  await sleep(700);
+
+  /* 节点发布：根据刺激强度决定发布几条 */
+  for (var a of activated) {
+    var node = a.node;
+    var strength = node.stimulus / node.theta;
+    var numTexts = 1;
+    if (strength > 1.8) numTexts = 3;
+    else if (strength > 1.3) numTexts = 2;
+    numTexts = Math.min(numTexts, S.params.maxPost - node.publishedTexts.length);
+    if (numTexts < 1) numTexts = 1;
+
+    for (var i = 0; i < numTexts; i++) {
+      var push = a.pushes[i] || a.pushes[0];
+      var srcText = push.text.text;
+      var srcSig = push.text.style;
+
+      var newText = await generateText(srcText, node, a.pushes);
+      var originId = 'n' + node.id + '_s' + S.timeStep + '_' + i;
 
       var mut = mutationVector(srcSig, node.sig);
-      mut._srcText = x.text.text;
+      mut._srcText = srcText;
       mut._tgtText = newText;
-      mut._textSim = textSimilarity(x.text.text, newText);
+      mut._textSim = textSimilarity(srcText, newText);
       mut._node = node;
       mut._step = S.timeStep;
-      mut._originId = 'n' + node.id + '_s' + S.timeStep;
-      mut._parentTextId = x.text.originId;
+      mut._originId = originId;
+      mut._parentTextId = push.text.originId;
       mut._semanticPreservation = Math.round(mut._cosSim * 100);
+      mut._decision = detectDecision(srcText, newText, srcSig, node.sig);
       S.mutations.push(mut);
 
-      S.textChain.push({
+      var textRecord = {
         text: newText,
         nodeId: node.id,
         step: S.timeStep,
-        sig: { ...node.sig },
-        parentTextId: x.text.originId,
-        originId: 'n' + node.id + '_s' + S.timeStep,
-        srcText: x.text.text,
+        sig: JSON.parse(JSON.stringify(node.sig)),
+        parentTextId: push.text.originId,
+        originId: originId,
+        srcText: srcText,
         mutation: mut,
         semanticPreservation: mut._semanticPreservation,
-        originCircle: node.circle
-      });
+        originCircle: node.circle,
+        decision: mut._decision
+      };
+      S.textChain.push(textRecord);
+      node.publishedTexts.push(textRecord);
 
       renderTextChainEntry(mut);
       updateTextStats();
 
       S.activeTexts.push({
         text: newText,
-        style: { ...node.sig },
+        style: JSON.parse(JSON.stringify(node.sig)),
         originCircle: node.circle,
         originNode: node,
-        originId: 'n' + node.id + '_s' + S.timeStep,
+        originId: originId,
         step: S.timeStep,
         heat: 0.6
       });
-      S.activeTexts.forEach(function(t) { t.heat *= 0.9; });
+    }
 
-      addLog(node, newText);
-      updateAuditEntry(node, 'PASS');
+    node.state = 'infected';
+    node.stimulus = 0;
+    S.activeTexts.forEach(function(t) { t.heat *= 0.9; });
 
+    /* 加入转发边 */
+    a.pushes.forEach(function(p) {
       S.edges.push({
-        from: x.text.originNode.id, to: node.id,
+        from: p.text.originNode.id,
+        to: node.id,
         type: 'repost',
-        fromCircle: x.text.originCircle,
+        fromCircle: p.text.originCircle,
         toCircle: node.circle
       });
+    });
 
-      if (S.discoveryCounter === 0) {
-        discoverCommunities();
-      }
-    } else {
-      node.state = 'active';
-      updateAuditEntry(node, 'ACCUM');
-    }
+    updateAuditEntry(node, 'PASS');
   }
 
+  if (S.discoveryCounter === 0) discoverCommunities();
   updateStatus();
   computeNetMetrics();
   return true;
 }
 
-/* ============================================================
- *  算法审计面板
- * ============================================================ */
+/* 判断 LLM 实际改写行为 */
+function detectDecision(srcText, newText, srcSig, tgtSig) {
+  var sim = textSimilarity(srcText, newText);
+  if (sim > 0.75) return 'direct';  /* 高度相似 → 直接转发 */
+  if (tgtSig.stance.idx !== srcSig.stance.idx) return 'challenge';  /* 立场变了 → 质疑式 */
+  return 'rewrite';
+}
+
+/* ============ 审计面板 ============ */
 function renderAudit(audit) {
   var list = document.getElementById('auditContent');
   if (list.querySelector('.empty')) list.innerHTML = '';
+  if (!audit.entries.length) return;
 
   var sd = document.createElement('div');
   sd.className = 'audit-step';
-
   var title = document.createElement('div');
   title.className = 'step-title';
-  title.textContent = '第 ' + audit.step + ' 步 · Top-' + audit.entries.length + ' 推送';
+  title.textContent = '第 ' + audit.step + ' 步 · 激活 ' + audit.entries.length + ' 个节点';
   sd.appendChild(title);
 
   audit.entries.forEach(function(e) {
     var nd = document.createElement('div');
     nd.className = 'audit-node';
-    var sig = e.node.sig;
-    var commName = e.node.circle !== -1 ? (S.communityNames[e.node.circle] || ('社区' + (e.node.circle+1))) : '未分类';
+    var commName = e.node.circle !== -1 ? (S.communityNames[e.node.circle] || ('社区' + (e.node.circle + 1))) : '未分类';
     var commColor = e.node.circle !== -1 ? COMMUNITY_COLORS[e.node.circle % COMMUNITY_COLORS.length] : '#475569';
 
-    var dimBarsHtml = '';
-    var dimLabels = ['内容匹配', '圈层互文', '朋友信号', '文本热度', '时间衰减'];
-    var dimKeys2 = ['sim', 'overlap', 'friend', 'heat', 'recency'];
-    var dimColors2 = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4'];
-    dimKeys2.forEach(function(k, i) {
-      var val = e.calc.contrib[k];
-      var pct = Math.min(100, val * 200);
-      dimBarsHtml += '<div class="dim-bar-row">' +
-        '<span class="dbn">' + dimLabels[i] + '</span>' +
-        '<div class="dbb"><div class="dbf" style="width:' + pct + '%;background:' + dimColors2[i] + '"></div></div>' +
-        '<span class="dbv">' + val.toFixed(3) + '</span>' +
-        '</div>';
+    var pushHtml = '';
+    e.pushes.forEach(function(p, i) {
+      var isDom = i === 0 ? ' dominant' : '';
+      var srcNode = p.text.originNode;
+      pushHtml += '<div class="push-item' + isDom + '">' +
+        '<span>' + (isDom ? '★ ' : '  ') + '来自节点' + (srcNode.id + 1) + '</span>' +
+        '<b>' + p.score.toFixed(3) + '</b></div>';
     });
 
-    var penetrationHtml = e.penetration ? '<span class="penetration-flag">算法穿透</span>' : '';
+    var stances = e.pushes.map(function(p) {
+      return p.text.style.stance.value;
+    }).join('/');
 
     nd.innerHTML =
-      '<div><span class="name">节点 ' + (e.node.id+1) + '</span>' +
+      '<div><span class="name">节点 ' + (e.node.id + 1) + '</span>' +
       '<span class="tag" style="background:' + commColor + '22;color:' + commColor + ';font-size:9px;padding:1px 5px;border-radius:3px;">' + commName + '</span>' +
-      '<span style="font-size:9px;color:#64748b;margin-left:4px">' + sig.emotion.value + '/' + sig.stance.value + '</span>' +
-      penetrationHtml + '</div>' +
-      '<div class="formula">R = ' +
-        '<b>' + e.calc.contrib.sim.toFixed(3) + '</b><span class="dim">(w1)</span> + ' +
-        '<b>' + e.calc.contrib.overlap.toFixed(3) + '</b><span class="dim">(w2)</span> + ' +
-        '<b>' + e.calc.contrib.friend.toFixed(3) + '</b><span class="dim">(w3)</span> + ' +
-        '<b>' + e.calc.contrib.heat.toFixed(3) + '</b><span class="dim">(w4)</span> + ' +
-        '<b>' + e.calc.contrib.recency.toFixed(3) + '</b><span class="dim">(w5)</span>' +
-        ' = <b>' + e.calc.total.toFixed(3) + '</b></div>' +
-      '<div class="dim-bars">' + dimBarsHtml + '</div>' +
+      '<span style="font-size:9px;color:#64748b;margin-left:4px">' + e.node.sig.stance.value + '</span></div>' +
+      '<div class="push-list">' + pushHtml + '</div>' +
       '<div class="audit-total">' +
-        '<span class="at-label">累积: ' + e.node.stimulus.toFixed(2) + ' + ' + e.calc.total.toFixed(2) + ' = ' + (e.node.stimulus+e.calc.total).toFixed(2) + ' / ' + e.node.theta.toFixed(2) + '</span>' +
-        '<span class="at-verdict accum" data-node-id="' + e.node.id + '">判定中</span>' +
+      '<span>刺激 +' + e.deltaStim.toFixed(2) + '</span>' +
+      '<span class="at-val">' + e.node.stimulus.toFixed(2) + ' / ' + e.node.theta.toFixed(2) + '</span>' +
+      '<span class="at-verdict accum" data-node-id="' + e.node.id + '">待定</span>' +
       '</div>';
 
     sd.appendChild(nd);
@@ -1416,47 +1183,34 @@ function updateAuditEntry(node, verdict) {
   if (verdict === 'PASS') {
     el.classList.remove('accum');
     el.classList.add('pass');
-    el.textContent = '超过阈值';
-  } else {
-    el.textContent = '累积中 ' + node.stimulus.toFixed(2) + '/' + node.theta.toFixed(2);
+    el.textContent = '已激活';
   }
 }
 
-/* ============================================================
- *  文本演化面板
- * ============================================================ */
+/* ============ 文本链面板 ============ */
 function renderTextChainEntry(mut) {
   var list = document.getElementById('textChain');
   if (list.querySelector('.empty')) list.innerHTML = '';
 
-  if (S.textChain.length === 1) {
-    var seedEntry = document.createElement('div');
-    seedEntry.className = 'text-chain-entry seed';
-    seedEntry.innerHTML =
-      '<div class="tc-meta"><span class="tc-node">种子文本</span><span>步 0</span></div>' +
-      '<div class="tc-text">' + escapeHtml(mut._srcText) + '</div>' +
-      '<div class="semantic-preservation"><div class="sp-label"><span>语义保持率</span><b>100%</b></div>' +
-      '<div class="sp-bar"><div class="sp-fill" style="width:100%;background:#fbbf24"></div></div></div>';
-    list.appendChild(seedEntry);
-  }
-
   var node = mut._node;
-  var commName = node.circle !== -1 ? (S.communityNames[node.circle] || ('社区' + (node.circle+1))) : '未分类';
+  var commName = node.circle !== -1 ? (S.communityNames[node.circle] || ('社区' + (node.circle + 1))) : '未分类';
   var commColor = node.circle !== -1 ? COMMUNITY_COLORS[node.circle % COMMUNITY_COLORS.length] : '#475569';
   var preservation = mut._semanticPreservation;
   var presColor = preservation > 70 ? '#10b981' : preservation > 40 ? '#f59e0b' : '#ef4444';
 
-  var mutBarsHtml = '';
+  var decLabel = { direct: '直接转发', rewrite: '改写转发', challenge: '质疑式' }[mut._decision] || '改写';
+  var decClass = mut._decision || 'rewrite';
+
+  var mutBars = '';
   DIM_KEYS.forEach(function(k, i) {
     var d = mut[k];
-    var absDelta = Math.abs(d.delta);
-    var pct = Math.min(100, absDelta * 100 * 2);
-    var changedHtml = d.changed ? '<span class="mb-changed">!</span>' : '';
-    mutBarsHtml += '<div class="mut-bar-row">' +
+    var abs = Math.abs(d.delta);
+    var pct = Math.min(100, abs * 100 * 2);
+    var chg = d.changed ? '<span class="mb-changed">!</span>' : '';
+    mutBars += '<div class="mut-bar-row">' +
       '<span class="mbn">' + DIM_NAMES[i] + '</span>' +
       '<div class="mbb"><div class="mbf" style="width:' + pct + '%;background:' + DIM_COLORS[i] + '"></div></div>' +
-      '<span class="mbv">' + absDelta.toFixed(2) + '</span>' +
-      changedHtml + '</div>';
+      '<span class="mbv">' + abs.toFixed(2) + '</span>' + chg + '</div>';
   });
 
   var e = document.createElement('div');
@@ -1464,18 +1218,15 @@ function renderTextChainEntry(mut) {
   e.style.borderLeftColor = commColor;
   e.innerHTML =
     '<div class="tc-meta">' +
-      '<span class="tc-node">节点 ' + (node.id+1) + '</span>' +
-      '<span>步 ' + mut._step + '</span>' +
-      '<span class="tc-community" style="background:' + commColor + '22;color:' + commColor + '">' + commName + '</span>' +
-      '<span style="color:#8b5cf6">变异: ' + mut._total.toFixed(3) + '</span>' +
+    '<span class="tc-node">节点 ' + (node.id + 1) + '</span>' +
+    '<span>步 ' + mut._step + '</span>' +
+    '<span class="tc-community" style="background:' + commColor + '22;color:' + commColor + '">' + commName + '</span>' +
+    '<span class="tc-decision ' + decClass + '">' + decLabel + '</span>' +
     '</div>' +
-    '<div class="tc-from-text">' + escapeHtml(mut._srcText) + '</div>' +
+    '<div class="tc-from-text">源：' + escapeHtml(mut._srcText) + '</div>' +
     '<div class="tc-text">' + escapeHtml(mut._tgtText) + '</div>' +
-    '<div class="semantic-preservation">' +
-      '<div class="sp-label"><span>语义保持率</span><b>' + preservation + '%</b></div>' +
-      '<div class="sp-bar"><div class="sp-fill" style="width:' + preservation + '%;background:' + presColor + '"></div></div>' +
-    '</div>' +
-    '<div class="mutation-bars">' + mutBarsHtml + '</div>';
+    '<div style="font-size:9.5px;color:#94a3b8;margin-bottom:4px">语义保持率 <b style="color:' + presColor + '">' + preservation + '%</b></div>' +
+    '<div class="mutation-bars">' + mutBars + '</div>';
 
   list.appendChild(e);
   list.scrollTop = list.scrollHeight;
@@ -1490,7 +1241,7 @@ function initTextStats() {
       '<span class="tdn">' + DIM_NAMES[i] + '</span>' +
       '<div class="tdb"><div class="tdf" id="tes-bar-' + k + '" style="width:0%;background:' + DIM_COLORS[i] + '"></div></div>' +
       '<span class="tdv" id="tes-val-' + k + '">0.00</span>' +
-    '</div>';
+      '</div>';
   });
   bars.innerHTML = html;
 }
@@ -1498,31 +1249,17 @@ function initTextStats() {
 function updateTextStats() {
   if (!S.mutations.length) return;
   document.getElementById('textStatsCard').style.display = 'block';
-
   document.getElementById('tes-count').textContent = S.mutations.length;
-
-  var avgPres = S.mutations.reduce(function(s, m) { return s + m._semanticPreservation; }, 0) / S.mutations.length;
-  document.getElementById('tes-preservation').textContent = avgPres.toFixed(1) + '%';
-
+  var avg = S.mutations.reduce(function(s, m) { return s + m._semanticPreservation; }, 0) / S.mutations.length;
+  document.getElementById('tes-preservation').textContent = avg.toFixed(1) + '%';
   DIM_KEYS.forEach(function(k) {
     var sum = S.mutations.reduce(function(s, m) { return s + Math.abs(m[k].delta); }, 0);
-    var avg = sum / S.mutations.length;
+    var avg2 = sum / S.mutations.length;
     var bar = document.getElementById('tes-bar-' + k);
     var val = document.getElementById('tes-val-' + k);
-    if (bar) bar.style.width = (avg * 100 * 2).toFixed(0) + '%';
-    if (val) val.textContent = avg.toFixed(2);
+    if (bar) bar.style.width = Math.min(100, avg2 * 100 * 2) + '%';
+    if (val) val.textContent = avg2.toFixed(2);
   });
-
-  var coupling = computeCoupling();
-  document.getElementById('cm-val').textContent = coupling.toFixed(2);
-}
-
-function computeCoupling() {
-  if (S.mutations.length < 1) return 0;
-  var avgMut = S.mutations.reduce(function(s, m) { return s + m._total; }, 0) / S.mutations.length;
-  var infectedCount = S.nodes.filter(function(n) { return n.state === 'infected'; }).length;
-  var branching = S.mutations.length > 0 ? infectedCount / S.mutations.length : 0;
-  return Math.min(1, avgMut * branching);
 }
 
 function escapeHtml(text) {
@@ -1532,17 +1269,14 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-/* ============================================================
- *  网络指标
- * ============================================================ */
+/* ============ 网络指标 ============ */
 function computeNetMetrics() {
   var N = S.nodes.length;
-  if (N === 0) return;
+  if (!N) return;
   var degree = [];
   for (var i = 0; i < N; i++) degree.push(0);
   for (var e of S.edges) { degree[e.from]++; degree[e.to]++; }
   var avgDeg = degree.reduce(function(a, b) { return a + b; }, 0) / N;
-  var maxDeg = Math.max.apply(null, degree);
 
   var adj = [];
   for (var i = 0; i < N; i++) adj.push(new Set());
@@ -1553,19 +1287,16 @@ function computeNetMetrics() {
     if (nbrs.length < 2) continue;
     var links = 0;
     for (var j = 0; j < nbrs.length; j++)
-      for (var k = j+1; k < nbrs.length; k++)
+      for (var k = j + 1; k < nbrs.length; k++)
         if (adj[nbrs[j]].has(nbrs[k])) links++;
-    clustSum += 2*links / (nbrs.length*(nbrs.length-1));
+    clustSum += 2 * links / (nbrs.length * (nbrs.length - 1));
     clustCount++;
   }
-  var avgClust = clustCount > 0 ? clustSum/clustCount : 0;
-
+  var avgClust = clustCount > 0 ? clustSum / clustCount : 0;
+  var bridgeCount = S.nodes.filter(function(n) { return n.bridge; }).length;
   var uniqueComm = [];
   S.nodes.forEach(function(n) { if (n.circle !== -1 && uniqueComm.indexOf(n.circle) === -1) uniqueComm.push(n.circle); });
-
-  var bridgeCount = S.nodes.filter(function(n) { return n.bridge; }).length;
-
-  S.netMetrics = { avgDeg: avgDeg, maxDeg: maxDeg, avgClust: avgClust, degree: degree, communityCount: uniqueComm.length, bridgeCount: bridgeCount };
+  S.netMetrics = { avgDeg: avgDeg, avgClust: avgClust, communityCount: uniqueComm.length, bridgeCount: bridgeCount };
   renderNetBadge();
 }
 
@@ -1576,47 +1307,33 @@ function renderNetBadge() {
   if (el) {
     el.innerHTML =
       '<div class="row"><span class="lbl">节点</span><span class="v">' + S.nodes.length + '</span></div>' +
-      '<div class="row"><span class="lbl">互文边</span><span class="v">' + S.edges.length + '</span></div>' +
+      '<div class="row"><span class="lbl">边</span><span class="v">' + S.edges.length + '</span></div>' +
       '<div class="row"><span class="lbl">平均度</span><span class="v">' + m.avgDeg.toFixed(2) + '</span></div>' +
-      '<div class="row"><span class="lbl">聚类系数</span><span class="v">' + m.avgClust.toFixed(3) + '</span></div>' +
-      '<div class="row"><span class="lbl">桥接节点</span><span class="v">' + m.bridgeCount + '</span></div>';
+      '<div class="row"><span class="lbl">聚类</span><span class="v">' + m.avgClust.toFixed(3) + '</span></div>' +
+      '<div class="row"><span class="lbl">桥接</span><span class="v">' + m.bridgeCount + '</span></div>';
   }
 }
 
-/* ============================================================
- *  日志
- * ============================================================ */
-function addLog(node, text, isSeed) {
-  var list = document.getElementById('auditContent');
-  var logArea = document.getElementById('textChain');
-  var commName = node.circle !== -1 ? (S.communityNames[node.circle] || ('社区' + (node.circle+1))) : '未分类';
-  var commColor = node.circle !== -1 ? COMMUNITY_COLORS[node.circle % COMMUNITY_COLORS.length] : '#475569';
-}
-
-/* ============================================================
- *  状态更新
- * ============================================================ */
+/* ============ 状态 ============ */
 function updateStatus() {
   var inf = S.nodes.filter(function(n) { return n.state === 'infected'; }).length;
   document.getElementById('s-infected').textContent = inf;
   document.getElementById('s-texts').textContent = S.activeTexts.length;
   document.getElementById('s-calls').textContent = S.apiCalls;
-  var uniqueComm = [];
-  S.nodes.forEach(function(n) { if (n.circle !== -1 && uniqueComm.indexOf(n.circle) === -1) uniqueComm.push(n.circle); });
-  document.getElementById('s-communities').textContent = uniqueComm.length;
+  var unique = [];
+  S.nodes.forEach(function(n) { if (n.circle !== -1 && unique.indexOf(n.circle) === -1) unique.push(n.circle); });
+  document.getElementById('s-communities').textContent = unique.length;
   document.getElementById('s-stability').textContent = S.communityStability.toFixed(2);
 }
 
-/* ============================================================
- *  主循环
- * ============================================================ */
+/* ============ 主循环 ============ */
 function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
 
 async function loop() {
   while (S.running && S.timeStep < S.params.maxSteps) {
     var cont = await runOneStep();
     if (!cont) break;
-    await sleep(400);
+    await sleep(500);
   }
   S.running = false;
   document.getElementById('btnStart').disabled = false;
@@ -1628,20 +1345,32 @@ function startSimulation() {
   if (S.running) return;
   resetSim(false);
 
-  var maxDeg = 0, seed = S.nodes[0];
-  S.nodes.forEach(function(n) {
-    var deg = n.friends.length;
-    if (deg > maxDeg) { maxDeg = deg; seed = n; }
-  });
+  var seed = S.nodes[0];
+  var maxDeg = 0;
+  S.nodes.forEach(function(n) { if (n.friends.length > maxDeg) { maxDeg = n.friends.length; seed = n; } });
 
   seed.state = 'infected';
   seed.text = S.params.seedText;
-  seed.receiveStep = 0;
   seed.pulse = 1;
+  var seedTextRecord = {
+    text: S.params.seedText,
+    nodeId: seed.id,
+    step: 0,
+    sig: JSON.parse(JSON.stringify(seed.sig)),
+    parentTextId: null,
+    originId: 'seed',
+    srcText: S.params.seedText,
+    mutation: null,
+    semanticPreservation: 100,
+    originCircle: seed.circle,
+    decision: 'direct'
+  };
+  seed.publishedTexts.push(seedTextRecord);
+  S.textChain.push(seedTextRecord);
 
   S.activeTexts = [{
     text: S.params.seedText,
-    style: { ...seed.sig },
+    style: JSON.parse(JSON.stringify(seed.sig)),
     originCircle: seed.circle,
     originNode: seed,
     originId: 'seed',
@@ -1649,29 +1378,15 @@ function startSimulation() {
     heat: 1.0
   }];
 
-  S.textChain = [{
-    text: S.params.seedText,
-    nodeId: seed.id,
-    step: 0,
-    sig: { ...seed.sig },
-    parentTextId: null,
-    originId: 'seed',
-    srcText: S.params.seedText,
-    mutation: null,
-    semanticPreservation: 100,
-    originCircle: seed.circle
-  }];
-
   var list = document.getElementById('textChain');
   list.innerHTML = '';
-  var seedEntry = document.createElement('div');
-  seedEntry.className = 'text-chain-entry seed';
-  seedEntry.innerHTML =
-    '<div class="tc-meta"><span class="tc-node">种子文本</span><span>步 0</span></div>' +
+  var seedDiv = document.createElement('div');
+  seedDiv.className = 'text-chain-entry seed';
+  seedDiv.innerHTML =
+    '<div class="tc-meta"><span class="tc-node">种子文本 · 节点' + (seed.id + 1) + '</span><span>步 0</span></div>' +
     '<div class="tc-text">' + escapeHtml(S.params.seedText) + '</div>' +
-    '<div class="semantic-preservation"><div class="sp-label"><span>语义保持率</span><b>100%</b></div>' +
-    '<div class="sp-bar"><div class="sp-fill" style="width:100%;background:#fbbf24"></div></div></div>';
-  list.appendChild(seedEntry);
+    '<div style="font-size:9.5px;color:#94a3b8">来源：' + seed.sig.stance.value + ' / ' + seed.sig.emotion.value + '</div>';
+  list.appendChild(seedDiv);
 
   updateStatus();
   S.running = true;
@@ -1690,14 +1405,12 @@ function resetSim(rebuild) {
   S.arrows = [];
   S.mutations = [];
   S.textChain = [];
-  S.prevClusters = [];
   S.communityStability = 0;
   S.communityNames = [];
-  S.communityStableCount = 0;
   S.discoveryCounter = 0;
 
-  document.getElementById('auditContent').innerHTML = '<div class="empty">点击开始后<br>实时展示每轮 R_alg 算法推送的完整计算过程<br>包括五维贡献分解与跨圈穿透检测</div>';
-  document.getElementById('textChain').innerHTML = '<div class="empty">尚无文本变异<br>传播开始后此处展示文本变异链<br>每次改写后显示语义保持率与六维变异</div>';
+  document.getElementById('auditContent').innerHTML = '<div class="empty">点击开始后<br>实时展示每个节点收到的多条推送<br>以及刺激累积和激活判定</div>';
+  document.getElementById('textChain').innerHTML = '<div class="empty">尚无文本变异<br>传播开始后此处展示每次发布的文本<br>以及七维意义变异</div>';
   document.getElementById('textStatsCard').style.display = 'none';
   document.getElementById('btnStart').disabled = false;
   document.getElementById('btnStart').textContent = '开始';
@@ -1705,8 +1418,6 @@ function resetSim(rebuild) {
   document.getElementById('s-step').textContent = '0';
   document.getElementById('s-stability').textContent = '0.00';
   document.getElementById('s-communities').textContent = '0';
-  var sb = document.getElementById('stabilityBadge');
-  if (sb) sb.style.display = 'none';
 
   if (rebuild) buildNetwork();
   S.nodes.forEach(function(n) {
@@ -1714,9 +1425,10 @@ function resetSim(rebuild) {
     n.text = null;
     n.stimulus = 0;
     n.pulse = 0;
-    n.receiveStep = -1;
+    n.receivedTexts = [];
+    n.publishedTexts = [];
+    n.seenTextIds = {};
     n.bridge = false;
-    n.colorTransition = 0;
   });
   computeNetMetrics();
   updateStatus();
@@ -1729,30 +1441,19 @@ function initSim() {
   initTextStats();
   startAnimation();
 
-  var expLabels = { form: '圈层如何形成', penetrate: '算法如何穿透圈层', evolve: '文本如何改变传播' };
-  document.getElementById('simSubtitle').textContent = expLabels[S.params.experiment] || '';
+  var labels = { form: '圈层如何形成', penetrate: '算法如何穿透圈层', evolve: '文本如何改变传播' };
+  document.getElementById('simSubtitle').textContent = labels[S.params.experiment] || '';
 
   if (S.params.experiment === 'penetrate') {
     document.getElementById('expCtrlW2').style.display = 'flex';
     document.getElementById('expCtrlAdapt').style.display = 'none';
-    var w2slider = document.getElementById('live-w2');
-    var w2val = document.getElementById('live-v-w2');
-    w2slider.value = S.params.w2 * 100;
-    w2val.textContent = S.params.w2.toFixed(2);
-    w2slider.oninput = function() {
-      S.params.w2 = parseFloat(w2slider.value) / 100;
-      w2val.textContent = S.params.w2.toFixed(2);
-    };
-  } else if (S.params.experiment === 'evolve') {
-    document.getElementById('expCtrlW2').style.display = 'none';
-    document.getElementById('expCtrlAdapt').style.display = 'flex';
-    var adaptSlider = document.getElementById('live-adapt');
-    var adaptVal = document.getElementById('live-v-adapt');
-    adaptSlider.value = S.params.adaptStrength * 100;
-    adaptVal.textContent = S.params.adaptStrength.toFixed(2);
-    adaptSlider.oninput = function() {
-      S.params.adaptStrength = parseFloat(adaptSlider.value) / 100;
-      adaptVal.textContent = S.params.adaptStrength.toFixed(2);
+    var w2s = document.getElementById('live-w2');
+    var w2v = document.getElementById('live-v-w2');
+    w2s.value = S.params.w2 * 100;
+    w2v.textContent = S.params.w2.toFixed(2);
+    w2s.oninput = function() {
+      S.params.w2 = parseFloat(w2s.value) / 100;
+      w2v.textContent = S.params.w2.toFixed(2);
     };
   } else {
     document.getElementById('expCtrlW2').style.display = 'none';
@@ -1760,12 +1461,8 @@ function initSim() {
   }
 }
 
-/* ============================================================
- *  事件
- * ============================================================ */
-document.getElementById('btnStart').addEventListener('click', function() {
-  startSimulation();
-});
+/* ============ 事件 ============ */
+document.getElementById('btnStart').addEventListener('click', function() { startSimulation(); });
 document.getElementById('btnStep').addEventListener('click', async function() {
   if (S.running) return;
   S.running = true;
@@ -1787,9 +1484,6 @@ document.getElementById('btnBack').addEventListener('click', function() {
   document.getElementById('setupPage').classList.remove('setup-hidden');
 });
 
-/* ============================================================
- *  启动
- * ============================================================ */
 initSetup();
 </script>
 </body>
